@@ -40,11 +40,11 @@ export const intersect = (target: Set<any> | Array<any> | IterableIterator<any>,
 //   return [...new Set(target)].filter(x => !againstSet.has(x));
 // }
 
-export const traverse = (target: ObjectLike, walker: (key: string, value: any) => void) => {
+export const traverse = (target: ObjectLike, walker: (key: string, value: any, parent?: any) => void) => {
   for (const k of Object.keys(target)) {
     const value = Reflect.get(target, k);
     if (isObject(value)) {
-      walker(k, value);
+      walker(k, value, target);
       traverse(value, walker);
     } else {
       // Do something with obj[k]

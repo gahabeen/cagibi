@@ -1,20 +1,20 @@
-import { getId, getParentId, getReferences } from './accessors';
+import { getId, getParentId, getReferences, getSource } from './accessors';
 import { InstanceId, InstanceSource, ParentInstanceId } from './symbols';
 import { ObjectLike } from './types';
 import { get, isObject, makeId, set, traverse } from './utils';
 
-export const make = (target: ObjectLike, parent?: ObjectLike) => {
+export const wrap = (target: ObjectLike, parent?: ObjectLike) => {
   if (!isObject(target)) return target;
   const cloned = Object.defineProperties(
-    clone(target, make),
+    clone(target, wrap),
     {
       [InstanceId]: {
-        writable: false,
+        writable: true,
         enumerable: false,
         value: Reflect.get(target, InstanceId) || makeId()
       },
       [ParentInstanceId]: {
-        writable: false,
+        writable: true,
         enumerable: false,
         value: Reflect.get(target, ParentInstanceId) || Reflect.get(parent || {}, InstanceId)
       }
@@ -27,12 +27,16 @@ export const make = (target: ObjectLike, parent?: ObjectLike) => {
       return get(getTarget, key);
     },
     set(setTarget, key, value, receiver) {
-      const wrapped = make(value, setTarget);
+      const wrapped = wrap(value, setTarget);
       set(setTarget, key, wrapped, receiver);
       return true;
     }
   })
 };
+
+export const copy = (source: ObjectLike) => {
+  return wrap(getSource(clone(source)));
+}
 
 export const clone = (source: any, transform: (value: any, parent?: any) => any = v => v): any => {
   if (!isObject(source)) return transform(source);
@@ -46,7 +50,7 @@ export const clone = (source: any, transform: (value: any, parent?: any) => any 
       newSource,
       symbol,
       {
-        writable: false,
+        writable: true,
         enumerable: false,
         value: Reflect.get(source, symbol)
       }
@@ -70,8 +74,7 @@ export const clone = (source: any, transform: (value: any, parent?: any) => any 
   }
 }
 
-
-export const mergeInternal = (source: any, target?: any) => {
+export const rawMerge = (source: any, target?: any) => {
   const sourceClone = clone(source);
   if (target === undefined) return sourceClone;
 
@@ -82,7 +85,7 @@ export const mergeInternal = (source: any, target?: any) => {
       // Loop items from source
       for (const sourceItem of sourceClone) {
         const matchedItem = isObject(sourceItem) && targetClone.find((x: any) => getId(x) === getId(sourceItem));
-        if (matchedItem) Object.assign(sourceItem, mergeInternal(sourceItem, matchedItem));
+        if (matchedItem) Object.assign(sourceItem, rawMerge(sourceItem, matchedItem));
       }
 
       // Loop items from target
@@ -99,7 +102,7 @@ export const mergeInternal = (source: any, target?: any) => {
   else if (isObject(sourceClone)) {
     if (isObject(targetClone)) {
       for (const key of Object.keys(targetClone)) {
-        sourceClone[key] = mergeInternal(Reflect.get(sourceClone, key), Reflect.get(targetClone, key));
+        sourceClone[key] = rawMerge(Reflect.get(sourceClone, key), Reflect.get(targetClone, key));
       }
     }
 
@@ -111,10 +114,9 @@ export const mergeInternal = (source: any, target?: any) => {
   }
 }
 
-
 export const merge = (source: ObjectLike, ...targets: ObjectLike[]): any => {
   let references = new Set(getReferences(source).keys());
-  let cloned = clone(source);
+  let cloned = { root: clone(source) };
 
   let iterationsWithoutChange = 0;
 
@@ -126,7 +128,7 @@ export const merge = (source: ObjectLike, ...targets: ObjectLike[]): any => {
 
     // Merge target into cloned when no parent id is set
     if (!targetParentId) {
-      cloned = mergeInternal(cloned, target);
+      cloned.root = rawMerge(cloned.root, target);
     }
     // Check all parents are present in the target
     else if (references.has(targetParentId)) {
@@ -135,13 +137,13 @@ export const merge = (source: ObjectLike, ...targets: ObjectLike[]): any => {
       references = new Set([...references, ...targetReferences.keys()]);
       iterationsWithoutChange = 0;
 
-      traverse(cloned, (key, value) => {
+      traverse(cloned, (key: string, value: any, parent: any) => {
         if (getId(value) === targetParentId && Array.isArray(value)) {
-          const merged = mergeInternal(value, [target]);
-          set(cloned, key, merged);
+          const merged = rawMerge(value, [target]);
+          set(parent, key, merged);
         } else if (getId(value) === targetId) {
-          const merged = mergeInternal(value, target);
-          set(cloned, key, merged);
+          const merged = rawMerge(value, target);
+          set(parent, key, merged);
         }
       });
 
@@ -153,5 +155,5 @@ export const merge = (source: ObjectLike, ...targets: ObjectLike[]): any => {
     }
   }
 
-  return cloned;
+  return cloned.root;
 };

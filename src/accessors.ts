@@ -14,8 +14,7 @@ export const getReferences = (target: any): Map<string, ObjectLike> => {
     if (instanceId) deps.set(instanceId, value);
   }
 
-  walker(null, target);
-  traverse(target, walker);
+  traverse({ target }, walker);
 
   return deps;
 }
