@@ -1,0 +1,1 @@
+export type ObjectLike = { [Key in string | number | symbol]: any; } | ArrayLike<any>
