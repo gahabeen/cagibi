@@ -1,3 +1,6 @@
-export const InstanceSource = Symbol('InstanceSource');
-export const InstanceId = Symbol('InstanceId');
-export const ParentInstanceId = Symbol('ParentInstanceId');
+export const InstanceSource = Symbol('CagibiInstanceSource');
+export const InstanceId = Symbol('CagibiInstanceId');
+export const ParentInstanceId = Symbol('CagibiParentInstanceId');
+// export const FlatValue = Symbol('CagibiFlatValue');
+
+export const ContextSymbols = [InstanceId, ParentInstanceId];

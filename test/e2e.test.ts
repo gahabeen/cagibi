@@ -1,6 +1,27 @@
-import { merge, wrap } from '../src/core';
+import { getId, getParentId } from '../src/accessors';
+import { join, unwrap, wrap } from '../src/core';
 
 describe('end-to-end', () => {
+  it('should work', () => {
+
+    const obj = {
+      work: {
+        name: 'super'
+      },
+      matches: [],
+      urls: [],
+    };
+    const state = wrap(obj);
+
+    const match = wrap({ name: '' }, state.matches);
+    match.name = 'match';
+
+    const merged = join(state, match);
+
+    expect(unwrap(state)).toStrictEqual(obj);
+    expect(merged.matches?.[0]).toStrictEqual(match);
+  });
+
   it('should work', () => {
 
     const state = wrap({
@@ -11,13 +32,14 @@ describe('end-to-end', () => {
       urls: [],
     });
 
-    const match = wrap({}, state.matches);
+    const match = wrap({ name: '' }, state.matches);
+
     match.name = 'match';
 
     const list = { urls: ['https://google.com'] };
     const boolean = { test: true };
 
-    const merged = merge(state, match, list, boolean);
+    const merged = join(state, match, list, boolean);
 
     expect(merged.matches?.[0]).toStrictEqual(match);
     expect(merged.urls).toStrictEqual(list.urls);
@@ -26,7 +48,7 @@ describe('end-to-end', () => {
 
   it('should work', () => {
 
-    const results = wrap([]);
+    const results = wrap<any[]>([]);
 
     const result = {
       work: {
@@ -34,18 +56,17 @@ describe('end-to-end', () => {
       },
     };
 
-    const result1 = wrap(result, results);
+    const result1 = wrap<any>(result, results);
     result1.work.name = 'result 1';
 
-    const merged = merge(results, result1);
+    const merged = join(results, result1);
 
     expect(merged?.[0]?.work?.name).toStrictEqual(result1.work.name);
   });
 
-
   it('should work', () => {
 
-    const state = wrap({
+    const state = wrap<any>({
       jobs: {
         one: {
           startedAt: null,
@@ -59,9 +80,44 @@ describe('end-to-end', () => {
     const sameState = wrap(state);
     sameState.jobs.one.endedAt = new Date().getTime();
 
-    const merged = merge(state, sameState);
+    const merged = join(state, sameState);
 
     expect(merged.jobs.one.endedAt).toBeGreaterThanOrEqual(merged.jobs.one.startedAt);
+  });
+
+  it('should work', () => {
+
+    type ItemType = Partial<{ id: number, matches: { name: string }[] }>;
+    const state = wrap<ItemType[]>([]);
+
+    const item = wrap<ItemType>({}, state);
+
+    item.id = 1;
+    const matches = item.matches;
+
+    matches?.push({ name: 'Joe' });
+    matches?.push({ name: 'Janne' });
+
+    const merged = join(state, item);
+
+    expect(merged.length).toBe(1);
+  });
+
+  it('should work', () => {
+    type ItemType = Partial<{ id: number, matches: { name: string }[] }>;
+    const state = wrap<ItemType[]>([]);
+    state.push({ id: 1, matches: [] });
+
+    const { matches } = [...state].pop() || {};
+
+    if (matches) {
+      matches.push({ name: 'Joe' });
+      matches.push({ name: 'Janne' });
+
+      const merged = join(state, matches);
+
+      expect(merged.length).toBe(1);
+    }
   });
 
 });

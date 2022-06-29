@@ -1,122 +1,147 @@
+import cloneDeepWith from 'lodash.clonedeepwith';
+import mergeWith from 'lodash.mergewith';
 import { getId, getParentId, getReferences, getSource } from './accessors';
-import { InstanceId, InstanceSource, ParentInstanceId } from './symbols';
-import { ObjectLike } from './types';
-import { get, isObject, makeId, set, traverse } from './utils';
+import { ContextSymbols, InstanceId, InstanceSource, ParentInstanceId } from './symbols';
+import { ObjectLike, WithProperties } from './types';
+import { get, isObject, makeId, reduceDeep, set } from './utils';
 
-export const wrap = (target: ObjectLike, parent?: ObjectLike) => {
+export const unwrap = <T extends ObjectLike>(target: T): T => {
+  return getSource<T>(target) || target;
+}
+
+const addContext = (target: ObjectLike, parent?: ObjectLike) => {
   if (!isObject(target)) return target;
-  const cloned = Object.defineProperties(
-    clone(target, wrap),
+
+  Object.defineProperties(
+    target,
     {
       [InstanceId]: {
-        writable: true,
+        configurable: true,
+        writable: false,
         enumerable: false,
         value: Reflect.get(target, InstanceId) || makeId()
       },
       [ParentInstanceId]: {
-        writable: true,
+        configurable: true,
+        writable: false,
         enumerable: false,
         value: Reflect.get(target, ParentInstanceId) || Reflect.get(parent || {}, InstanceId)
       }
     }
-  );
-
-  return new Proxy(cloned, {
-    get(getTarget, key) {
-      if (key === InstanceSource) return getTarget;
-      return get(getTarget, key);
-    },
-    set(setTarget, key, value, receiver) {
-      const wrapped = wrap(value, setTarget);
-      set(setTarget, key, wrapped, receiver);
-      return true;
-    }
-  })
+  )
 };
 
-export const copy = (source: ObjectLike) => {
-  return wrap(getSource(clone(source)));
-}
-
-export const clone = (source: any, transform: (value: any, parent?: any) => any = v => v): any => {
-  if (!isObject(source)) return transform(source);
-
-  const newSource = Array.isArray(source) ? [] : {};
-
-  // Pass the symbols through
-  const symbols = Object.getOwnPropertySymbols(source);
-  for (const symbol of symbols) {
-    Object.defineProperty(
-      newSource,
-      symbol,
-      {
-        writable: true,
+const getContextProperties = (source: ObjectLike) => {
+  return Object.getOwnPropertySymbols(source).reduce((acc, symbol) => {
+    if (ContextSymbols.includes(symbol)) {
+      Reflect.set(acc, symbol, {
+        writable: false,
+        configurable: true,
         enumerable: false,
         value: Reflect.get(source, symbol)
-      }
-    )
-  }
-
-  if (Array.isArray(source)) {
-    for (const item of Object.values(source)) {
-      (newSource as any[]).push(transform(clone(item), source));
+      })
     }
-    return newSource;
-
-  } else if (isObject(source)) {
-    return Object.keys(source).reduce((acc: any, key) => {
-      acc[key] = transform(clone(source[key]), source);
-      return acc;
-    }, newSource);
-
-  } else {
-    return transform(source);
-  }
+    return acc;
+  }, {});
 }
 
-export const rawMerge = (source: any, target?: any) => {
-  const sourceClone = clone(source);
-  if (target === undefined) return sourceClone;
-
-  const targetClone = clone(target);
-  // When source is an array
-  if (Array.isArray(sourceClone)) {
-    if (Array.isArray(targetClone)) {
-      // Loop items from source
-      for (const sourceItem of sourceClone) {
-        const matchedItem = isObject(sourceItem) && targetClone.find((x: any) => getId(x) === getId(sourceItem));
-        if (matchedItem) Object.assign(sourceItem, rawMerge(sourceItem, matchedItem));
-      }
-
-      // Loop items from target
-      for (const item of targetClone) {
-        const itemExists = isObject(item) && sourceClone.findIndex((x: any) => getId(x) === getId(item)) > -1;
-        if (!itemExists) sourceClone.push(item);
-      }
-    }
-
-    return sourceClone;
-
-  }
-  // When source is an object
-  else if (isObject(sourceClone)) {
-    if (isObject(targetClone)) {
-      for (const key of Object.keys(targetClone)) {
-        sourceClone[key] = rawMerge(Reflect.get(sourceClone, key), Reflect.get(targetClone, key));
-      }
-    }
-
-    return sourceClone;
-  }
-  // When source is a primitive type
-  else {
-    return target || source;
-  }
+const setContextProperties = (source: ObjectLike, properties: PropertyDescriptorMap) => {
+  Object.defineProperties(source, {
+    ...Object.getOwnPropertyDescriptors(source),
+    ...properties
+  });
 }
 
-export const merge = (source: ObjectLike, ...targets: ObjectLike[]): any => {
+export const copyContext = (source: ObjectLike, destination: ObjectLike) => {
+
+  // Retrieve interesting context
+  const properties: Record<string, PropertyDescriptor> = getContextProperties(source);
+  setContextProperties(destination, properties);
+
+  return destination;
+}
+
+
+export const wrap = <T extends ObjectLike>(target: T, parent?: ObjectLike): WithProperties<T> => {
+
+  const proxy = <T extends object = any>(value: T): T => {
+    if (!isObject(value)) return value;
+
+    return new Proxy(value, {
+      get(gTarget, gKey) {
+        if (gKey === InstanceSource) return gTarget;
+        const gValue = get(gTarget, gKey);
+        // if (isObject(gValue)) return proxy(gValue);
+        return gValue;
+      },
+      set(sTarget, sKey, sValue, sReceiver) {
+        const wrapped = wrap(sValue, sTarget);
+        set(sTarget, sKey, wrapped, sReceiver);
+        return true;
+      }
+    })
+  }
+
+  const cloned = clone(target);
+  addContext(cloned, parent);
+
+  const reduced = reduceDeep<T, any>(cloned, (rParent: any, rValue: any, rKey?: any) => {
+    if (isObject(rValue)) {
+      addContext(rValue as ObjectLike, rParent);
+    }
+
+    if (isObject(rParent)) {
+      rParent[rKey] = rValue;
+    }
+
+    return rParent;
+  }, cloned);
+
+  const proxied = proxy(reduced);
+
+  return proxied;
+};
+
+export const clone = <T = any>(source: T): T => {
+  return Reflect.get(cloneDeepWith({ source }, (value: any, key: any) => {
+    if (isObject(value)) {
+      const properties = getContextProperties(value);
+      setContextProperties(value, properties);
+
+      return value;
+    }
+  }), 'source');
+}
+
+export const merge = (target: any, source?: any) => {
+  return Reflect.get(
+    mergeWith({ root: target }, { root: source }, (targetValue: any, sourceValue: any, key: string) => {
+      // Custom merge arrays
+      if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
+        const destinationArray = clone(targetValue);
+
+        if (Array.isArray(sourceValue)) {
+          // Loop items from source
+          for (const destinationItem of destinationArray) {
+            const matchedItem = isObject(destinationItem) && sourceValue.find((x: any) => getId(x) === getId(destinationItem));
+            if (matchedItem) Object.assign(destinationItem, merge(destinationItem, matchedItem));
+          }
+
+          // Loop items from target
+          for (const item of sourceValue) {
+            const itemExists = isObject(item) && destinationArray.findIndex((x: any) => getId(x) === getId(item)) > -1;
+            if (!itemExists) destinationArray.push(item);
+          }
+        }
+
+        return destinationArray;
+      }
+    }), 'root');
+}
+
+export const join = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): T => {
   let references = new Set(getReferences(source).keys());
-  let cloned = { root: clone(source) };
+  let cloned = clone(source);
 
   let iterationsWithoutChange = 0;
 
@@ -128,7 +153,7 @@ export const merge = (source: ObjectLike, ...targets: ObjectLike[]): any => {
 
     // Merge target into cloned when no parent id is set
     if (!targetParentId) {
-      cloned.root = rawMerge(cloned.root, target);
+      cloned = merge(cloned, target);
     }
     // Check all parents are present in the target
     else if (references.has(targetParentId)) {
@@ -137,23 +162,76 @@ export const merge = (source: ObjectLike, ...targets: ObjectLike[]): any => {
       references = new Set([...references, ...targetReferences.keys()]);
       iterationsWithoutChange = 0;
 
-      traverse(cloned, (key: string, value: any, parent: any) => {
-        if (getId(value) === targetParentId && Array.isArray(value)) {
-          const merged = rawMerge(value, [target]);
-          set(parent, key, merged);
-        } else if (getId(value) === targetId) {
-          const merged = rawMerge(value, target);
-          set(parent, key, merged);
+      console.log({ cloned: (cloned as any).work, id: getId((cloned as any).work) })
+
+      cloned = Reflect.get(reduceDeep<{ root: T }, any>({ root: cloned }, (rParent, rValue, rKey) => {
+
+        if (getId(rValue) === targetParentId && Array.isArray(rValue)) {
+          rParent[rKey] = merge(rValue, [target]);
+          console.log(rKey, { merged: rParent[rKey] })
+
+        } else if (getId(rValue) === targetId) {
+          rParent[rKey] = merge(rValue, target);
         }
-      });
+
+        // console.log({ rKey, targetParentId, id: getId(rValue), array: Array.isArray(rValue), rValue, rParent })
+
+        if (isObject(rParent)) {
+          rParent[rKey] = rValue;
+        }
+
+        return rParent;
+      }, { root: cloned }), 'root');
 
     }
-    //
     else {
       targets.push(target);
       iterationsWithoutChange++;
     }
   }
 
-  return cloned.root;
+  return cloned;
 };
+
+
+
+// export const copy = (source: ObjectLike) => {
+//   return wrap(getSource(source));
+// }
+
+
+
+
+// Need it differently
+
+// export const flatten = <T extends ObjectLike>(source: T): any => {
+//   const transform = (value: any, parent?: any): any => {
+//     if (isObject(value)) {
+//       Object.defineProperties(
+//         value,
+//         {
+//           ...Object.getOwnPropertyDescriptors(value),
+//           [InstanceId.toString()]: {
+//             writable: true,
+//             configurable: true,
+//             enumerable: true,
+//             value: Reflect.get(value, InstanceId)
+//           },
+//           [ParentInstanceId.toString()]: {
+//             writable: true,
+//             configurable: true,
+//             enumerable: true,
+//             value: Reflect.get(value, ParentInstanceId) || Reflect.get(parent || {}, InstanceId)
+//           }
+//         }
+//       );
+//     }
+
+//     return value;
+//   }
+
+//   const flattened = clone(source, transform);
+//   transform(flattened);
+
+//   return flattened;
+// }
