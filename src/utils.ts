@@ -3,15 +3,14 @@ import reduce from 'lodash.reduce';
 import { customAlphabet } from 'nanoid';
 import { ObjectLike } from './types';
 
-
 export const UID_LENGTH = 12;
 export const TS_LENGTH = 8;
 
 export const uid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', UID_LENGTH);
 
-export const isObject = (target: any): boolean => typeof target === 'object' && target !== null;
+export const isObjectLike = (target: any): boolean => typeof target === 'object' && target !== null;
 
-export const makeId = (): string => `${uid()}${new Date().getTime().toString(36)}`;
+export const newReference = (): string => `${uid()}${new Date().getTime().toString(36)}`;
 
 export const readId = (id: string): { uid: string, ts: Date } => ({
   uid: id.slice(0, UID_LENGTH),
@@ -24,8 +23,13 @@ export const parseKey = (target: ObjectLike, key: string | number | symbol) => {
 }
 
 export const get = (target: ObjectLike, key: any) => {
-  const parsedKey = parseKey(target, key);
-  return Reflect.get(target, parsedKey);
+  const reducer = (rOutput: any, rKey: any) => {
+    const parsedKey = parseKey(rOutput, rKey);
+    return Reflect.get(rOutput, parsedKey);
+  };
+
+  if (typeof key !== 'string') return reducer(target, key);
+  return `${key}`.split('.').reduce(reducer, target);
 };
 
 export const set = (target: ObjectLike, key: any, value: any, receiver: any = target): boolean => {
@@ -48,17 +52,20 @@ export const intersect = (target: Set<any> | Array<any> | IterableIterator<any>,
 export const traverse = (target: ObjectLike, walker: (key: string | number | symbol, value: any, parent?: any) => void) => {
   for (const k of Reflect.ownKeys(target)) {
     const value = Reflect.get(target, k);
-    if (isObject(value)) {
+    if (isObjectLike(value)) {
       walker(k, value, target);
       traverse(value, walker);
     }
   }
 };
+// export const reduceDeep = <T extends object = any, O = any>(target: T, reducer: (parent: any, value: any, key?: any) => any, initialValue: any = target): O => {
+
+// };
 
 export const reduceDeep = <T extends object = any, O = any>(target: T, reducer: (parent: any, value: any, key?: any) => any, initialValue: any = target): O => {
   return reduce<T, O>(target, (parent: any, value: any, key: any) => {
     const newParent = reducer(parent, value, key);
-    if (isObject(newParent[key])) {
+    if (isObjectLike(newParent[key])) {
       parent[key] = reduceDeep(parent[key], reducer);
     } else {
       parent = newParent;

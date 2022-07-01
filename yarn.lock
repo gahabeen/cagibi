@@ -628,7 +628,7 @@ __metadata:
     micromatch: ^4.0.4
     pirates: ^4.0.4
     slash: ^3.0.0
-    write-file-atomic: ^4.0.1
+    flatten-file-atomic: ^4.0.1
   checksum: cd8d1bdf1a5831cdf91934dd0af1d29d4d2bcad92feb9bf7555fc0e1152cb01a9206410380af0f6221a623ffc9b6f6e6dded429d01d87b85b0777cf9d4425127
   languageName: node
   linkType: hard
@@ -833,15 +833,6 @@ __metadata:
     jest-matcher-utils: ^28.0.0
     pretty-format: ^28.0.0
   checksum: 28141f2d5b3bafd063362de9790cb8f219488d9b0ad47524a84bef1142a4f0d9d35be0c56988d9f922205225cc83c986acd4be424bd8653b38dc27ab672455e2
-  languageName: node
-  linkType: hard
-
-"@types/lodash.clonedeepwith@npm:^4.5.7":
-  version: 4.5.7
-  resolution: "@types/lodash.clonedeepwith@npm:4.5.7"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: 2cfc7c55533abf491a2b6897a233244b187bf55ac51545e4f0b937721fdfb7e82cb3743290aa4dcb41487d653d95fdddc172b39318a893c9a2ca6658b0866430
   languageName: node
   linkType: hard
 
@@ -1202,12 +1193,11 @@ __metadata:
   resolution: "cagibi@workspace:."
   dependencies:
     "@types/jest": ^28.1.3
-    "@types/lodash.clonedeepwith": ^4.5.7
     "@types/lodash.mergewith": ^4.6.7
     "@types/lodash.reduce": ^4.6.7
     "@types/node": ^18.0.0
+    flatten-anything: ^3.0.2
     jest: ^28.1.1
-    lodash.clonedeepwith: ^4.5.0
     lodash.mergewith: ^4.6.2
     lodash.reduce: ^4.6.0
     nanoid: 3.1.20
@@ -1600,6 +1590,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"filter-anything@npm:^2.2.4":
+  version: 2.2.4
+  resolution: "filter-anything@npm:2.2.4"
+  dependencies:
+    is-what: ^3.14.1
+    ts-toolbelt: ^9.6.0
+  checksum: fec0dec78eb97bef0c9ff52e0540ea65791096b4439674f86babbd7141da786ed479070470baed6264f79d439516f62f7cb78dab11bb53794ab0447443c8b996
+  languageName: node
+  linkType: hard
+
 "find-up@npm:^4.0.0, find-up@npm:^4.1.0":
   version: 4.1.0
   resolution: "find-up@npm:4.1.0"
@@ -1607,6 +1607,16 @@ __metadata:
     locate-path: ^5.0.0
     path-exists: ^4.0.0
   checksum: 4c172680e8f8c1f78839486e14a43ef82e9decd0e74145f40707cc42e7420506d5ec92d9a11c22bd2c48fb0c384ea05dd30e10dd152fefeec6f2f75282a8b844
+  languageName: node
+  linkType: hard
+
+"flatten-anything@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "flatten-anything@npm:3.0.2"
+  dependencies:
+    filter-anything: ^2.2.4
+    is-what: ^4.1.6
+  checksum: 3b48955172828826d7167b17d0bdf3deab023e787f7fb7b53012e3eae21a512843ff871351c1911079e62c1a483212b1a589108a19cd5a2207ccd4482ea60d66
   languageName: node
   linkType: hard
 
@@ -1932,6 +1942,20 @@ __metadata:
   version: 2.0.1
   resolution: "is-stream@npm:2.0.1"
   checksum: b8e05ccdf96ac330ea83c12450304d4a591f9958c11fd17bed240af8d5ffe08aedafa4c0f4cfccd4d28dc9d4d129daca1023633d5c11601a6cbc77521f6fae66
+  languageName: node
+  linkType: hard
+
+"is-what@npm:^3.14.1":
+  version: 3.14.1
+  resolution: "is-what@npm:3.14.1"
+  checksum: a9a6ce92d33799f1ae0916c7afb6f8128a23ce9d28bd69d9ec3ec88910e7a1f68432e6236c3c8a4d544cf0b864675e5d828437efde60ee0cf8102061d395c1df
+  languageName: node
+  linkType: hard
+
+"is-what@npm:^4.1.6":
+  version: 4.1.7
+  resolution: "is-what@npm:4.1.7"
+  checksum: aade39dcc45a209d6cb2f2d5dbcf0e63ed894aadbae37bd5693c64e9876a27632431b43fc9d9332ebf0795eddd2abc11a2d0f3c6fa41c36330616a645660530e
   languageName: node
   linkType: hard
 
@@ -2504,13 +2528,6 @@ __metadata:
   dependencies:
     p-locate: ^4.1.0
   checksum: 83e51725e67517287d73e1ded92b28602e3ae5580b301fe54bfb76c0c723e3f285b19252e375712316774cf52006cb236aed5704692c32db0d5d089b69696e30
-  languageName: node
-  linkType: hard
-
-"lodash.clonedeepwith@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "lodash.clonedeepwith@npm:4.5.0"
-  checksum: 9fbf4ebfa04b381df226a2298eba680327bea3d0d5d19c5118de7ae218fd219186e30e9fd0d33b13729f34ffbc83c1cf09cb27aff265ba94cb602b8a2b1e71c9
   languageName: node
   linkType: hard
 
@@ -3438,6 +3455,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-toolbelt@npm:^9.6.0":
+  version: 9.6.0
+  resolution: "ts-toolbelt@npm:9.6.0"
+  checksum: 9f35fd95d895a5d32ea9fd2e532a695b0bae6cbff6832b77292efa188a0ed1ed6e54f63f74a8920390f3d909a7a3adb20a144686372a8e78b420246a9bd3d58a
+  languageName: node
+  linkType: hard
+
 "type-detect@npm:4.0.8":
   version: 4.0.8
   resolution: "type-detect@npm:4.0.8"
@@ -3569,9 +3593,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"write-file-atomic@npm:^4.0.1":
+"flatten-file-atomic@npm:^4.0.1":
   version: 4.0.1
-  resolution: "write-file-atomic@npm:4.0.1"
+  resolution: "flatten-file-atomic@npm:4.0.1"
   dependencies:
     imurmurhash: ^0.1.4
     signal-exit: ^3.0.7

@@ -1,58 +1,57 @@
 import * as utils from '../src/utils';
-import { TS_LENGTH, UID_LENGTH } from '../src/utils';
 
-describe('isObject(value: any)', () => {
+describe('isObjectLike(value: any)', () => {
   it('should return true for objects', () => {
-    expect(utils.isObject({})).toBeTruthy();
-    expect(utils.isObject([])).toBeTruthy();
+    expect(utils.isObjectLike({})).toBeTruthy();
+    expect(utils.isObjectLike([])).toBeTruthy();
   });
 
   it('should return false for null', () => {
-    expect(utils.isObject(null)).toBeFalsy();
+    expect(utils.isObjectLike(null)).toBeFalsy();
   });
 
   it('should return false for undefined', () => {
-    expect(utils.isObject(undefined)).toBeFalsy();
+    expect(utils.isObjectLike(undefined)).toBeFalsy();
   });
 
   it('should return false for booleans', () => {
-    expect(utils.isObject(true)).toBeFalsy();
-    expect(utils.isObject(false)).toBeFalsy();
+    expect(utils.isObjectLike(true)).toBeFalsy();
+    expect(utils.isObjectLike(false)).toBeFalsy();
   });
 
   it('should return false for primitives', () => {
-    expect(utils.isObject(42)).toBeFalsy();
-    expect(utils.isObject('should fo')).toBeFalsy();
+    expect(utils.isObjectLike(42)).toBeFalsy();
+    expect(utils.isObjectLike('should fo')).toBeFalsy();
   });
 
   it('should return false for functions', () => {
-    expect(utils.isObject(function () { })).toBeFalsy();
+    expect(utils.isObjectLike(function () { })).toBeFalsy();
   });
 });
 
-describe('makeId()', () => {
-  const id1 = utils.makeId();
-  const id2 = utils.makeId();
-  const id3 = utils.makeId();
+describe('newReference()', () => {
+  const id1 = utils.newReference();
+  const id2 = utils.newReference();
+  const id3 = utils.newReference();
 
   it('should return a new id of right length', () => {
-    expect(id1.length).toBe(UID_LENGTH + TS_LENGTH);
+    expect(id1.length).toBe(utils.UID_LENGTH + utils.TS_LENGTH);
   });
 
   it('should return a different id everytime (100 000 generations)', () => {
     const length = 100000;
-    expect(new Set(Array.apply(null, Array(length)).map(() => utils.makeId())).size).toBe(length);
+    expect(new Set(Array.apply(null, Array(length)).map(() => utils.newReference())).size).toBe(length);
   });
 });
 
 describe('readId(id: string)', () => {
   it('should return an timestamp (ts) that should be a valid Date', () => {
-    expect(utils.readId(utils.makeId()).ts).toBeInstanceOf(Date);
-    expect(utils.readId(utils.makeId()).ts.getTime()).toBeLessThanOrEqual(new Date().getTime());
+    expect(utils.readId(utils.newReference()).ts).toBeInstanceOf(Date);
+    expect(utils.readId(utils.newReference()).ts.getTime()).toBeLessThanOrEqual(new Date().getTime());
   });
 
   it('should return an uid (uid) that should be a string of fixed length', () => {
-    expect(utils.readId(utils.makeId()).uid.length).toBe(UID_LENGTH);
+    expect(utils.readId(utils.newReference()).uid.length).toBe(utils.UID_LENGTH);
   });
 });
 

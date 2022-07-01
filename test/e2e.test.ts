@@ -1,5 +1,5 @@
-import { getId, getParentId } from '../src/accessors';
-import { join, unwrap, wrap } from '../src/core';
+import { read, write } from '../src/io';
+import { join, unmake, make } from '../src/main';
 
 describe('end-to-end', () => {
   it('should work', () => {
@@ -11,20 +11,20 @@ describe('end-to-end', () => {
       matches: [],
       urls: [],
     };
-    const state = wrap(obj);
+    const state = make(obj);
 
-    const match = wrap({ name: '' }, state.matches);
+    const match = make({ name: '' }, state.matches);
     match.name = 'match';
 
     const merged = join(state, match);
 
-    expect(unwrap(state)).toStrictEqual(obj);
+    expect(unmake(state)).toStrictEqual(obj);
     expect(merged.matches?.[0]).toStrictEqual(match);
   });
 
   it('should work', () => {
 
-    const state = wrap({
+    const state = make({
       work: {
         name: 'super'
       },
@@ -32,7 +32,7 @@ describe('end-to-end', () => {
       urls: [],
     });
 
-    const match = wrap({ name: '' }, state.matches);
+    const match = make({ name: '' }, state.matches);
 
     match.name = 'match';
 
@@ -48,7 +48,7 @@ describe('end-to-end', () => {
 
   it('should work', () => {
 
-    const results = wrap<any[]>([]);
+    const results = make<any[]>([]);
 
     const result = {
       work: {
@@ -56,7 +56,7 @@ describe('end-to-end', () => {
       },
     };
 
-    const result1 = wrap<any>(result, results);
+    const result1 = make<any>(result, results);
     result1.work.name = 'result 1';
 
     const merged = join(results, result1);
@@ -66,7 +66,7 @@ describe('end-to-end', () => {
 
   it('should work', () => {
 
-    const state = wrap<any>({
+    const state = make<any>({
       jobs: {
         one: {
           startedAt: null,
@@ -77,7 +77,7 @@ describe('end-to-end', () => {
 
     state.jobs.one.startedAt = new Date().getTime();
 
-    const sameState = wrap(state);
+    const sameState = make(state);
     sameState.jobs.one.endedAt = new Date().getTime();
 
     const merged = join(state, sameState);
@@ -88,9 +88,9 @@ describe('end-to-end', () => {
   it('should work', () => {
 
     type ItemType = Partial<{ id: number, matches: { name: string }[] }>;
-    const state = wrap<ItemType[]>([]);
+    const state = make<ItemType[]>([]);
 
-    const item = wrap<ItemType>({}, state);
+    const item = make<ItemType>({}, state);
 
     item.id = 1;
     const matches = item.matches;
@@ -105,7 +105,7 @@ describe('end-to-end', () => {
 
   it('should work', () => {
     type ItemType = Partial<{ id: number, matches: { name: string }[] }>;
-    const state = wrap<ItemType[]>([]);
+    const state = make<ItemType[]>([]);
     state.push({ id: 1, matches: [] });
 
     const { matches } = [...state].pop() || {};
@@ -118,6 +118,46 @@ describe('end-to-end', () => {
 
       expect(merged.length).toBe(1);
     }
+  });
+
+  it('should work', () => {
+    const state = make<any[]>([]);
+    const item = make<any>({}, state)
+
+    item.name = 'Joe';
+
+    const merged = join(state, item);
+
+    expect(merged?.[0]?.name).toBe('Joe');
+  });
+
+  it('should work', () => {
+    const state = make<any[]>([]);
+    const item = make<any>({}, state)
+
+    item.name = 'Joe';
+
+    const merged = join(state, item);
+
+    expect(merged?.[0]?.name).toBe('Joe');
+  });
+
+
+  it('should work', () => {
+    const dataset = make<any[]>([]);
+    const states = [];
+
+    for (const step in [1, 2, 3]) {
+      const result = make<any>({}, dataset);
+      result.step = step;
+      states.push(write(result));
+    }
+
+    const items = states.map(state => read(state));
+
+    const merged = join(dataset, ...items);
+
+    expect(merged?.length).toBe(3);
   });
 
 });
