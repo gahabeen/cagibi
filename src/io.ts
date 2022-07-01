@@ -44,7 +44,7 @@ export const write = <T extends ObjectLike>(source: T, options: { compress: bool
 
   // console.log({ sourceFlat, contexts, flat });
   if (options.compress) {
-    return compress(JSON.stringify(flat), { outputEncoding: 'Base64' });
+    return compress(JSON.stringify(flat), { outputEncoding: 'StorageBinaryString' });
   }
 
   return flat as T;
@@ -54,8 +54,12 @@ export const write = <T extends ObjectLike>(source: T, options: { compress: bool
 export const read = <T extends ObjectLike | string>(written: T, options: { isCompressed: boolean } = { isCompressed: false }): T => {
   let input = written;
 
-  if (options.isCompressed) {
-    input = JSON.parse(decompress(written as string, { inputEncoding: 'Base64' }));
+  if (typeof input === 'string' || options.isCompressed) {
+    try {
+      input = JSON.parse(decompress(written as string, { inputEncoding: 'StorageBinaryString' }));
+    } catch (error) {
+      throw new Error('Invalid compressed data.');
+    }
   }
 
   if (!isObjectLike(input) || !Reflect.has(input as ObjectLike, CONTEXTS_KEY)) {
