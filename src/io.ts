@@ -1,4 +1,5 @@
 import { flatten } from 'flatten-anything';
+import { compress, decompress } from 'lzutf8';
 import * as utils from './utils';
 import * as Context from './context';
 import { clone, make } from './main';
@@ -7,11 +8,12 @@ import { ObjectLike } from './types';
 import { isObjectLike } from './utils';
 
 const ROOT_KEY = SYMBOLS.toString(SYMBOLS.Root);
+const DATA_KEY = SYMBOLS.toString(SYMBOLS.Data);
 const CONTEXTS_KEY = SYMBOLS.toString(SYMBOLS.Contexts);
 
 const customGet = (target: any, path: string) => path === ROOT_KEY ? target : utils.get(target, path)
 
-export const write = <T extends ObjectLike>(source: T): any => {
+export const write = <T extends ObjectLike>(source: T, options: { compress: boolean } = { compress: false }): T | string => {
   if (!isObjectLike(source) || !Context.getReference(source)) {
     throw new Error('Source must be a valid ObjectLike created via make() method.');
   }
@@ -35,22 +37,37 @@ export const write = <T extends ObjectLike>(source: T): any => {
 
   // console.log({ sourceFlat, contexts, source });
 
-  let flat = clone(source);
-  Reflect.set(flat, CONTEXTS_KEY, contexts);
+  const flat = {
+    [DATA_KEY]: clone(source),
+    [CONTEXTS_KEY]: contexts
+  };
 
   // console.log({ sourceFlat, contexts, flat });
-  return flat;
+  if (options.compress) {
+    return compress(JSON.stringify(flat), { outputEncoding: 'Base64' });
+  }
+
+  return flat as T;
 }
 
-export const read = <T extends ObjectLike>(written: T): any => {
-  if (!isObjectLike(written) || !Reflect.has(written, CONTEXTS_KEY)) {
+
+export const read = <T extends ObjectLike | string>(written: T, options: { isCompressed: boolean } = { isCompressed: false }): T => {
+  let input = written;
+
+  if (options.isCompressed) {
+    input = JSON.parse(decompress(written as string, { inputEncoding: 'Base64' }));
+  }
+
+  if (!isObjectLike(input) || !Reflect.has(input as ObjectLike, CONTEXTS_KEY)) {
     throw new Error('Written object must be valid. (created via write() method).');
   }
 
-  const contexts = Reflect.get(written, CONTEXTS_KEY);
-  const target = clone(Object.fromEntries(Object.entries(written).filter(([key]) => key !== CONTEXTS_KEY)));
+  const data = Reflect.get(input as ObjectLike, DATA_KEY);
+  const contexts = Reflect.get(input as ObjectLike, CONTEXTS_KEY);
 
-  // console.log({ contexts, written, ref: Context.getReference(written) })
+  const target = clone(data);
+
+  // console.log({ contexts, input, ref: Context.getReference(input) })
   for (const path of Object.keys(contexts)) {
     let value = customGet(target, path);
     const context = Reflect.get(contexts, path);
@@ -58,7 +75,7 @@ export const read = <T extends ObjectLike>(written: T): any => {
     // console.log({ value, context, ref: Context.getReference(value) })
   }
 
-  // console.log({ target, id: Context.getReference(target), ref: Context.getReference(written) });
+  // console.log({ target, id: Context.getReference(target), ref: Context.getReference(input) });
   // console.log('read id', Context.getReference(target))
 
   return target;

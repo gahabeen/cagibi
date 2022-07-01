@@ -628,7 +628,7 @@ __metadata:
     micromatch: ^4.0.4
     pirates: ^4.0.4
     slash: ^3.0.0
-    flatten-file-atomic: ^4.0.1
+    write-file-atomic: ^4.0.1
   checksum: cd8d1bdf1a5831cdf91934dd0af1d29d4d2bcad92feb9bf7555fc0e1152cb01a9206410380af0f6221a623ffc9b6f6e6dded429d01d87b85b0777cf9d4425127
   languageName: node
   linkType: hard
@@ -827,12 +827,12 @@ __metadata:
   linkType: hard
 
 "@types/jest@npm:^28.1.3":
-  version: 28.1.3
-  resolution: "@types/jest@npm:28.1.3"
+  version: 28.1.4
+  resolution: "@types/jest@npm:28.1.4"
   dependencies:
     jest-matcher-utils: ^28.0.0
     pretty-format: ^28.0.0
-  checksum: 28141f2d5b3bafd063362de9790cb8f219488d9b0ad47524a84bef1142a4f0d9d35be0c56988d9f922205225cc83c986acd4be424bd8653b38dc27ab672455e2
+  checksum: 97e22c600397bb4f30e39b595f8285ae92e4eb29a1ef6d1689749e4a4da683d88ecfe717b64492f6adc4c17c1c989520c3546f938c84a7d435c6ac3acf1a2bdc
   languageName: node
   linkType: hard
 
@@ -1200,6 +1200,7 @@ __metadata:
     jest: ^28.1.1
     lodash.mergewith: ^4.6.2
     lodash.reduce: ^4.6.0
+    lzutf8: ^0.6.2
     nanoid: 3.1.20
     ts-jest: ^28.0.5
     typescript: ^4.7.4
@@ -1445,9 +1446,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.172":
-  version: 1.4.173
-  resolution: "electron-to-chromium@npm:1.4.173"
-  checksum: c7f1fa54f104eca689099e08c8c17ccea2819749b15c882443cae0524b4b3e30e8c12367b9ba966b09f9444e944d65ae164c985a7f233b0a7ecc0daf9e6eb057
+  version: 1.4.177
+  resolution: "electron-to-chromium@npm:1.4.177"
+  checksum: e373df9b001c9a77a33b78ab4b8dbe6ee4175eb630c7d8dbe3671eb50be62a91c220cec71d56c2da3c532679ee692fe34715b915b900dec0962c08a983d06a86
   languageName: node
   linkType: hard
 
@@ -2562,9 +2563,18 @@ __metadata:
   linkType: hard
 
 "lru-cache@npm:^7.7.1":
-  version: 7.10.2
-  resolution: "lru-cache@npm:7.10.2"
-  checksum: b8f98064c981ce98e2a3b82903726dd28d842f54b7f53e1d6029c6836546243d4157b8495a405c062209715c612050150bdf30b5fa8200d5a3559fb0fd4072c1
+  version: 7.12.0
+  resolution: "lru-cache@npm:7.12.0"
+  checksum: fdb62262978393df7a4bd46a072bc5c3808c50ca5a347a82bb9459410efd841b7bae50655c3cf9004c70d12c756cf6d018f6bff155a16cdde9eba9a82899b5eb
+  languageName: node
+  linkType: hard
+
+"lzutf8@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "lzutf8@npm:0.6.2"
+  dependencies:
+    readable-stream: ^3.6.0
+  checksum: c8c8e6d7e5c77dafa746489bb99447907ba68f92be2db5206338ccc668c1d7283e5d9b64394e6b276c3d119275f51c3ebe55aa2af0e3777f89239498e27fba69
   languageName: node
   linkType: hard
 
@@ -3593,9 +3603,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatten-file-atomic@npm:^4.0.1":
+"write-file-atomic@npm:^4.0.1":
   version: 4.0.1
-  resolution: "flatten-file-atomic@npm:4.0.1"
+  resolution: "write-file-atomic@npm:4.0.1"
   dependencies:
     imurmurhash: ^0.1.4
     signal-exit: ^3.0.7

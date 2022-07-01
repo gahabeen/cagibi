@@ -147,8 +147,10 @@ describe('end-to-end', () => {
     const dataset = make<any[]>([]);
     const states = [];
 
-    for (const step in [1, 2, 3]) {
-      const result = make<any>({}, dataset);
+    const steps = [1, 2, 3, 4, 5];
+
+    for (const step in steps) {
+      const result = make({}, dataset);
       result.step = step;
       states.push(write(result));
     }
@@ -157,7 +159,7 @@ describe('end-to-end', () => {
 
     const merged = join(dataset, ...items);
 
-    expect(merged?.length).toBe(3);
+    expect(merged?.length).toBe(steps.length);
   });
 
 });
