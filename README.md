@@ -1,4 +1,4 @@
-![Cagibi Illustration](./media/header.jpg)
+![Cagibi Illustration](media/header.jpg)
 
     State stitching for scattered data structure management
 
