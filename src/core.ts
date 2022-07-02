@@ -162,6 +162,6 @@ export const report = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]
   };
 };
 
-export const join = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): T => {
+export const stitch = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): T => {
   return report(source, ...targets).data;
 }

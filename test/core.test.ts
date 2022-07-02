@@ -1,5 +1,5 @@
 import * as Context from '../src/context';
-import { clone, join, make, merge, proxy, unmake } from '../src/core';
+import { clone, stitch, make, merge, proxy, unmake } from '../src/core';
 import * as SYMBOLS from '../src/symbols';
 
 describe('clone - core', () => {
@@ -72,6 +72,7 @@ describe('unmake - core', () => {
       get(gTarget, gKey) {
         if (gKey === SYMBOLS.Source) return gTarget;
         if (gKey === 'test') return 'test';
+        return undefined;
       }
     });
 
@@ -146,23 +147,23 @@ describe('merge - core', () => {
 
 });
 
-describe('join - core', () => {
+describe('stitch - core', () => {
 
-  it('should join two objects with same reference', () => {
+  it('should stitch two objects with same reference', () => {
     const obj1: any = make({ surname: 'Joe' });
     const obj2: any = make(obj1);
     obj2.name = 'Don';
 
-    const merged = join(obj1, obj2);
+    const merged = stitch(obj1, obj2);
     expect(merged).toStrictEqual({ name: 'Don', surname: 'Joe' });
   });
 
-  it('should join a sub reference to a parent object', () => {
+  it('should stitch a sub reference to a parent object', () => {
     const obj1: any = make({ profile: {} });
     const obj2: any = make(obj1.profile);
     Object.assign(obj2, { name: 'Don' })
 
-    const merged = join(obj1, obj2);
+    const merged = stitch(obj1, obj2);
     expect(merged).toStrictEqual({ profile: { name: 'Don' } });
   });
 

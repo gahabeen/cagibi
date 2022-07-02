@@ -31,8 +31,6 @@ describe('isObjectLike(value: any)', () => {
 
 describe('newReference()', () => {
   const id1 = utils.newReference();
-  const id2 = utils.newReference();
-  const id3 = utils.newReference();
 
   it('should return a new id of right length', () => {
     expect(id1.length).toBe(utils.UID_LENGTH + utils.TS_LENGTH);

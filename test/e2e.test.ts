@@ -1,5 +1,5 @@
 import { read, write } from '../src/io';
-import { join, unmake, make } from '../src/core';
+import { stitch, unmake, make } from '../src/core';
 
 describe('end-to-end', () => {
 
@@ -17,7 +17,7 @@ describe('end-to-end', () => {
     const match = make({ name: '' }, state.matches);
     match.name = 'match';
 
-    const merged = join(state, match);
+    const merged = stitch(state, match);
 
     expect(unmake(state)).toStrictEqual(obj);
     expect(merged.matches?.[0]).toStrictEqual(match);
@@ -40,7 +40,7 @@ describe('end-to-end', () => {
     const list = { urls: ['https://google.com'] };
     const boolean = { test: true };
 
-    const merged = join(state, match, list, boolean);
+    const merged = stitch(state, match, list, boolean);
 
     expect(merged.matches?.[0]).toStrictEqual(match);
     expect(merged.urls).toStrictEqual(list.urls);
@@ -60,7 +60,7 @@ describe('end-to-end', () => {
     const result1 = make<any>(result, results);
     result1.work.name = 'result 1';
 
-    const merged = join(results, result1);
+    const merged = stitch(results, result1);
 
     expect(merged?.[0]?.work?.name).toStrictEqual(result1.work.name);
   });
@@ -81,7 +81,7 @@ describe('end-to-end', () => {
     const sameState = make(state);
     sameState.jobs.one.endedAt = new Date().getTime();
 
-    const merged = join(state, sameState);
+    const merged = stitch(state, sameState);
 
     expect(merged.jobs.one.endedAt).toBeGreaterThanOrEqual(merged.jobs.one.startedAt);
   });
@@ -99,7 +99,7 @@ describe('end-to-end', () => {
     matches?.push({ name: 'Joe' });
     matches?.push({ name: 'Janne' });
 
-    const merged = join(state, item);
+    const merged = stitch(state, item);
 
     expect(merged.length).toBe(1);
   });
@@ -115,7 +115,7 @@ describe('end-to-end', () => {
       matches.push({ name: 'Joe' });
       matches.push({ name: 'Janne' });
 
-      const merged = join(state, matches);
+      const merged = stitch(state, matches);
 
       expect(merged.length).toBe(1);
     }
@@ -127,7 +127,7 @@ describe('end-to-end', () => {
 
     item.name = 'Joe';
 
-    const merged = join(state, item);
+    const merged = stitch(state, item);
 
     expect(merged?.[0]?.name).toBe('Joe');
   });
@@ -138,7 +138,7 @@ describe('end-to-end', () => {
 
     item.name = 'Joe';
 
-    const merged = join(state, item);
+    const merged = stitch(state, item);
 
     expect(merged?.[0]?.name).toBe('Joe');
   });
@@ -158,7 +158,7 @@ describe('end-to-end', () => {
 
     const items = states.map(state => read(state));
 
-    const merged = join(dataset, ...items);
+    const merged = stitch(dataset, ...items);
 
     expect(merged?.length).toBe(steps.length);
   });
@@ -263,7 +263,7 @@ describe('end-to-end', () => {
     }
 
     const items = states.map(state => read(state))
-    const merged = join(dataset, ...items);
+    const merged = stitch(dataset, ...items);
 
     expect(merged).toStrictEqual(tvShows);
   });

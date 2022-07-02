@@ -1,6 +1,6 @@
 {
   "name": "cagibi",
-  "description": "State stitching for scattered data structures",
+  "description": "State stitching for scattered data structure management",
   "version": "0.0.11",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
