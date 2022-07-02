@@ -8,8 +8,8 @@ export const descriptorDefaults = {
   enumerable: false,
 };
 
-export const inherit = (target: ObjectLike, destination?: ObjectLike) => {
-  if (!isObjectLike(target)) return target;
+export const inherit = (target: ObjectLike, destination?: ObjectLike): void => {
+  if (!isObjectLike(target)) return;
 
   const reference = getReference(target) || newReference();
   const destinationRef = getReference(destination);

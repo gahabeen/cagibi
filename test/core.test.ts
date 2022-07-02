@@ -1,8 +1,9 @@
 import * as Context from '../src/context';
-import { clone, join, make, merge, proxy, unmake } from '../src/main';
+import { clone, join, make, merge, proxy, unmake } from '../src/core';
 import * as SYMBOLS from '../src/symbols';
 
 describe('clone - core', () => {
+
   it('should clone am empty object', () => {
     const obj = {};
     const objCloned = clone(obj);
@@ -42,9 +43,11 @@ describe('clone - core', () => {
     expect(objCloned).toStrictEqual(obj);
     expect(Context.getReference(objCloned)).toBe(Context.getReference(obj));
   });
+
 });
 
 describe('proxy - core', () => {
+
   it('should proxy am empty object', () => {
     const obj: { test?: string } = {};
     const pObj = proxy(obj);
@@ -58,9 +61,11 @@ describe('proxy - core', () => {
 
     expect(Reflect.get(pArr, SYMBOLS.IsProxied)).toBeTruthy();
   });
+
 });
 
 describe('unmake - core', () => {
+
   it('should unmake am empty object', () => {
     const obj: { test?: string } = {};
     const wObj = new Proxy(obj, {
@@ -83,10 +88,10 @@ describe('unmake - core', () => {
     expect(unmake(wObj)).toStrictEqual(obj);
   });
 
-
 });
 
 describe('make - core', () => {
+
   it('should make am empty object', () => {
     const obj = {};
     const wObj = make(obj);
@@ -118,6 +123,7 @@ describe('make - core', () => {
 });
 
 describe('merge - core', () => {
+
   it('should merge two arrays', () => {
     const arr1: any[] = [1];
     const arr2: any[] = [2];
@@ -131,17 +137,17 @@ describe('merge - core', () => {
     expect(merge(obj1, obj2)).toStrictEqual({ ...obj1, ...obj2 });
   });
 
-
   it('should merge two complex objects', () => {
     const obj1: any = { one: 1, list: [1] };
     const obj2: any = { two: 2, list: [2] };
     const merged = merge(obj1, obj2);
     expect(merged).toStrictEqual({ one: 1, two: 2, list: [1, 2] });
   });
+
 });
 
-
 describe('join - core', () => {
+
   it('should join two objects with same reference', () => {
     const obj1: any = make({ surname: 'Joe' });
     const obj2: any = make(obj1);
@@ -159,4 +165,5 @@ describe('join - core', () => {
     const merged = join(obj1, obj2);
     expect(merged).toStrictEqual({ profile: { name: 'Don' } });
   });
+
 });

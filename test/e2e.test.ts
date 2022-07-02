@@ -1,7 +1,8 @@
 import { read, write } from '../src/io';
-import { join, unmake, make } from '../src/main';
+import { join, unmake, make } from '../src/core';
 
 describe('end-to-end', () => {
+
   it('should work', () => {
 
     const obj = {
@@ -145,7 +146,7 @@ describe('end-to-end', () => {
 
   it('should work', () => {
     const dataset = make<any[]>([]);
-    const states = [];
+    const states: any[] = [];
 
     const steps = [1, 2, 3, 4, 5];
 
@@ -160,6 +161,111 @@ describe('end-to-end', () => {
     const merged = join(dataset, ...items);
 
     expect(merged?.length).toBe(steps.length);
+  });
+
+  it('should work', () => {
+    type TvShow = {
+      id: number,
+      name?: string,
+      seasons: {
+        id: number,
+        episodes: {
+          id: number,
+          name?: string,
+        }[]
+      }[]
+    }
+    const dataset = make<TvShow[]>([]);
+    const states: any[] = [];
+
+    const tvShows: TvShow[] = [
+      {
+        id: 1,
+        name: 'Game of Thrones',
+        seasons: [
+          {
+            id: 1,
+            episodes: [
+              { id: 1, name: 'Winter is Coming' },
+              { id: 2, name: 'The Kingsroad' },
+              { id: 3, name: 'A Golden Crown' },
+            ]
+          }
+        ]
+      },
+      {
+        id: 2,
+        name: 'The Big Bang Theory',
+        seasons: [
+          {
+            id: 1,
+            episodes: [
+              { id: 1, name: 'Something' },
+              { id: 2, name: 'Something else' },
+              { id: 3, name: 'Something else again' },
+            ]
+          },
+          {
+            id: 2,
+            episodes: [
+              { id: 1, name: 'A name' },
+              { id: 2, name: 'Another name' },
+              { id: 3, name: 'Another name again' },
+            ]
+          }
+        ]
+      },
+      {
+        id: 3,
+        name: 'The Simpsons',
+        seasons: [
+          {
+            id: 1,
+            episodes: [
+              { id: 1, name: 'Pilote' },
+              { id: 2, name: 'The Telltale Head' },
+              { id: 3, name: 'The Last Picture Show' },
+            ]
+          }
+        ]
+      }
+    ];
+
+    for (const tvShowItem of tvShows) {
+      const tvShow = make<TvShow>({
+        id: tvShowItem.id,
+        name: tvShowItem.name,
+        seasons: [],
+      }, dataset);
+
+      const tvShowSaved = write(tvShow);
+      states.push(tvShowSaved);
+
+      for (const seasonItem of tvShowItem.seasons) {
+        const season = make<typeof seasonItem>({
+          id: seasonItem.id,
+          episodes: [],
+        }, read<TvShow>(tvShowSaved).seasons)
+
+        const seasonSaved = write(season);
+        states.push(seasonSaved);
+
+        for (const episodeItem of seasonItem.episodes) {
+          const episode = make<typeof episodeItem>({
+            id: episodeItem.id,
+            name: episodeItem.name,
+          }, read(seasonSaved).episodes)
+
+          const episodeSaved = write(episode);
+          states.push(episodeSaved);
+        }
+      }
+    }
+
+    const items = states.map(state => read(state))
+    const merged = join(dataset, ...items);
+
+    expect(merged).toStrictEqual(tvShows);
   });
 
 });

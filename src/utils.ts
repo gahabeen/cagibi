@@ -37,13 +37,6 @@ export const set = (target: ObjectLike, key: any, value: any, receiver: any = ta
   return Reflect.set(target, parsedKey, value, receiver);
 };
 
-export const intersect = (target: Set<any> | Array<any> | IterableIterator<any>, against: Set<any> | Array<any> | IterableIterator<any>) => {
-  const againstSet = new Set(against);
-  for (const item of new Set(target)) {
-    if (!againstSet.has(item)) return false;
-  }
-}
-
 // export const subtract = (target: Set<any> | Array<any> | IterableIterator<any>, against: Set<any> | Array<any> | IterableIterator<any>) => {
 //   const againstSet = new Set(against);
 //   return [...new Set(target)].filter(x => !againstSet.has(x));

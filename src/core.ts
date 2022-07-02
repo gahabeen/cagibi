@@ -72,14 +72,12 @@ export const clone = <T extends any = any>(source: T, options: { withContext: bo
 }
 
 export const unmake = <T extends ObjectLike>(target: T): T => {
-  const unmade = clone(Context.getSource<T>(target) || target, { withContext: false });
-
-  return unmade;
+  return clone(Context.getSource<T>(target) || target, { withContext: false });
 }
 
 export const merge = (target: any, source?: any) => {
   return Reflect.get(
-    mergeWith({ root: clone(target) }, { root: clone(source) }, (targetValue: any, sourceValue: any, key: string) => {
+    mergeWith({ root: clone(target) }, { root: clone(source) }, (targetValue: any, sourceValue: any) => {
       // Custom merge arrays
       if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
         const destinationArray = clone(targetValue);
@@ -100,14 +98,17 @@ export const merge = (target: any, source?: any) => {
 
         return destinationArray;
       }
+
+      return undefined;
     }), 'root');
 }
 
-export const join = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): T => {
+export const report = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): { data: T, operations: any[] } => {
   let references = new Set(Context.getReferences(source).keys());
   let cloned = clone(source);
 
   let iterationsWithoutChange = 0;
+  const operations: any[] = [];
 
   while (targets.length && iterationsWithoutChange < targets.length) {
     const target = targets.shift() as ObjectLike;
@@ -117,6 +118,13 @@ export const join = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]):
     // Merge target into cloned when no reference
     if (!targetRef && !targetDestinationReference) {
       cloned = merge(cloned, target);
+      // operations.push({
+      //   description: '!targetRef && !targetDestinationReference',
+      //   data: {
+      //     cloned,
+      //     target
+      //   }
+      // })
     }
     // Check all destinations are present in the target
     else if (references.has(targetRef) || references.has(targetDestinationReference)) {
@@ -133,21 +141,10 @@ export const join = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]):
 
         } else if (Context.getReference(rValue) === targetRef) {
           rParent[rKey] = merge(rValue, target);
-          // console.log(rValue, rKey, Context.getReference(rValue), target, targetRef, rParent[rKey])
         }
         else if (isObjectLike(rParent)) {
           rParent[rKey] = rValue;
         }
-
-        // console.log({
-        //   rKey,
-        //   targetDestinationReference,
-        //   id: Context.getReference(rValue),
-        //   asArray: Context.getReference(rValue) === targetDestinationReference && Array.isArray(rValue),
-        //   isObject: Context.getReference(rValue) === targetRef,
-        //   rValue,
-        //   rParent,
-        // })
 
         return rParent;
       }, { root: cloned }), 'root');
@@ -159,5 +156,12 @@ export const join = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]):
     }
   }
 
-  return cloned;
+  return {
+    data: cloned,
+    operations,
+  };
 };
+
+export const join = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): T => {
+  return report(source, ...targets).data;
+}

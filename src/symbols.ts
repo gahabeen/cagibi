@@ -21,7 +21,7 @@ export const UpdatedAt = createSymbol('UpdatedAt');
 
 export const ContextSymbols = [Reference, DestinationReference, CreatedAt, UpdatedAt];
 
-// Flatten
+// IO
 export const Data = createSymbol('Data');
 export const Contexts = createSymbol('Contexts');
 

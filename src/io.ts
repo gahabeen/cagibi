@@ -1,10 +1,11 @@
 import { flatten } from 'flatten-anything';
 import { compress, decompress } from 'lzutf8';
-import * as utils from './utils';
+import { CAGIBI_SHORT_PREFIX, COMPRESSED_JSON_PREFIX, COMPRESSED_PREFIX_LENGTH, COMPRESSED_STORAGE_BINARY_STRING__PREFIX } from './consts';
 import * as Context from './context';
-import { clone, make } from './main';
+import { clone } from './core';
 import * as SYMBOLS from './symbols';
-import { ObjectLike } from './types';
+import { InputOuputType, ObjectLike } from './types';
+import * as utils from './utils';
 import { isObjectLike } from './utils';
 
 const ROOT_KEY = SYMBOLS.toString(SYMBOLS.Root);
@@ -13,7 +14,7 @@ const CONTEXTS_KEY = SYMBOLS.toString(SYMBOLS.Contexts);
 
 const customGet = (target: any, path: string) => path === ROOT_KEY ? target : utils.get(target, path)
 
-export const write = <T extends ObjectLike>(source: T, options: { compress: boolean } = { compress: false }): T | string => {
+export const write = <T extends ObjectLike>(source: T, options: { output: InputOuputType } = { output: 'compressed' }): T | string => {
   if (!isObjectLike(source) || !Context.getReference(source)) {
     throw new Error('Source must be a valid ObjectLike created via make() method.');
   }
@@ -43,20 +44,31 @@ export const write = <T extends ObjectLike>(source: T, options: { compress: bool
   };
 
   // console.log({ sourceFlat, contexts, flat });
-  if (options.compress) {
-    return compress(JSON.stringify(flat), { outputEncoding: 'StorageBinaryString' });
+  if (options.output === 'compressed') {
+    const stringified = JSON.stringify(flat);
+    const compressed = compress(stringified, { outputEncoding: 'StorageBinaryString' });
+
+    if (stringified.length <= compressed.length) {
+      return `${COMPRESSED_JSON_PREFIX}${stringified}`;
+    }
+
+    return `${COMPRESSED_STORAGE_BINARY_STRING__PREFIX}${compressed}`;
   }
 
   return flat as T;
 }
 
 
-export const read = <T extends ObjectLike | string>(written: T, options: { isCompressed: boolean } = { isCompressed: false }): T => {
+export const read = <T extends ObjectLike | string = any>(written: ObjectLike | string): T => {
   let input = written;
 
-  if (typeof input === 'string' || options.isCompressed) {
+  if ((typeof input === 'string' && input.slice(COMPRESSED_PREFIX_LENGTH).startsWith(CAGIBI_SHORT_PREFIX))) {
     try {
-      input = JSON.parse(decompress(written as string, { inputEncoding: 'StorageBinaryString' }));
+      const decompressed = input.startsWith(COMPRESSED_STORAGE_BINARY_STRING__PREFIX)
+        ? decompress((input as string).slice(COMPRESSED_STORAGE_BINARY_STRING__PREFIX.length), { inputEncoding: 'StorageBinaryString' })
+        : input.slice(COMPRESSED_JSON_PREFIX.length);
+
+      input = JSON.parse(decompressed);
     } catch (error) {
       throw new Error('Invalid compressed data.');
     }

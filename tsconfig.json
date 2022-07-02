@@ -1,11 +1,32 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "commonjs",
-    "moduleResolution": "node" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
-    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
-    "strict": true /* Enable all strict type-checking options. */,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
-  }
+    "extends": "@apify/tsconfig",
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "strict": true,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ES2015",
+            "ES2016",
+            "ES2018",
+            "ES2019.Object",
+            "ES2018.AsyncIterable",
+            "ES2020.String",
+            "ES2019.Array"
+        ],
+        "rootDir": "src",
+        "outDir": "lib",
+        "composite": true
+    },
+    "exclude": [
+        "node_modules",
+        "lib"
+    ],
+    "include": [
+        "src"
+    ],
 }
