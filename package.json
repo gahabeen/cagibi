@@ -1,7 +1,7 @@
 {
   "name": "cagibi",
   "description": "State stitching for scattered data structure management",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "directories": {
@@ -9,7 +9,8 @@
     "test": "test"
   },
   "files": [
-    "lib"
+    "lib",
+    "media"
   ],
   "dependencies": {
     "flatten-anything": "^3.0.2",
