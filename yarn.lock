@@ -1597,11 +1597,11 @@ __metadata:
     "@typescript-eslint/parser": ^5.30.3
     eslint: ^7.0.0
     eslint-plugin-import: ^2.25.3
+    fflate: ^0.7.3
     flatten-anything: ^3.0.2
     jest: ^28.1.1
     lodash.mergewith: ^4.6.2
     lodash.reduce: ^4.6.0
-    lzutf8: ^0.6.2
     nanoid: 3.1.20
     ts-jest: ^28.0.5
     tslib: ^2.4.0
@@ -2482,6 +2482,13 @@ __metadata:
   dependencies:
     bser: 2.1.1
   checksum: 8510230778ab3a51c27dffb1b76ef2c24fab672a42742d3c0a45c2e9d1e5f20210b1fbca33486088da4a9a3958bde96b5aec0a63aac9894b4e9df65c88b2cbd6
+  languageName: node
+  linkType: hard
+
+"fflate@npm:^0.7.3":
+  version: 0.7.3
+  resolution: "fflate@npm:0.7.3"
+  checksum: 6d0908c54643d5f979c2ba84a0dab74d71755360731a3a3d43d6aeb81728836f086c4f4d62908e3c03d460f2ef95908daa3bfbb8527be56cac0025b96553ee64
   languageName: node
   linkType: hard
 
@@ -3866,15 +3873,6 @@ __metadata:
   version: 7.12.0
   resolution: "lru-cache@npm:7.12.0"
   checksum: fdb62262978393df7a4bd46a072bc5c3808c50ca5a347a82bb9459410efd841b7bae50655c3cf9004c70d12c756cf6d018f6bff155a16cdde9eba9a82899b5eb
-  languageName: node
-  linkType: hard
-
-"lzutf8@npm:^0.6.2":
-  version: 0.6.2
-  resolution: "lzutf8@npm:0.6.2"
-  dependencies:
-    readable-stream: ^3.6.0
-  checksum: c8c8e6d7e5c77dafa746489bb99447907ba68f92be2db5206338ccc668c1d7283e5d9b64394e6b276c3d119275f51c3ebe55aa2af0e3777f89239498e27fba69
   languageName: node
   linkType: hard
 
