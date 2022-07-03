@@ -1,19 +1,48 @@
 ![Cagibi Illustration](media/header.jpg)
 
-    State stitching for scattered data structure management
+    Data stitching for async nested operations
 
+# Concept 💡
 
-# Get started
+    TLDR: Merging back together deeply nested data that has been updated in parallel is hard. Cagibi does the heavy lifting by holding hidden references to automatically stitch all your data back together.
 
-### Basic
+Adding or updating data into a deeply nested data structure can be *manageable* when you do it in the same context. Now imagine fetching bits of data in parallel (so completely async), and wanting to merge these all together once everything is fetched. This is now more work, isn't it? 🤯
+
+The idea behind **cagibi** is to **make any object referenceable** 🔍 without any work required.
+
+Cagibi adds some unique references to any object properties to serve as unique keys when we want to stitch everything back together. This context is held into hidden keys which won't pollute your data nor degrade your freedom to make your data structure the way you like it.
+
+# Get started 🏃‍♂️
+
 ```js
 import { make, stitch } from 'cagibi';
 
+// Example with an object
+
+const profile = make({
+    name: 'Joe',
+    details: {},
+});
+
+const { details } = profile;
+
+details.age = 23;
+
+const merged = stitch(profile, details);
+// => { name: 'Joe', details: { age: 23 } }
+
+// Example with an array
+
+// 1. Make a copy of any object
 const list = make([]);
+// 2. Make another object with a destination object as second paremeter (only for arrays)
 const item = make({ name: 'John' }, list);
 
-const merged = stitch(state, item); // [{ name: 'John'}]
+const merged = stitch(state, item);
+// => [{ name: 'John'}]
 ```
+
+# More examples
 ### Async operations (with in-memory state)
 ```js
 import { make, stitch, write, read } from 'cagibi';
