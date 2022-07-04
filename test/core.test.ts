@@ -128,8 +128,8 @@ describe('merge - core', () => {
   it('should merge two arrays', () => {
     const arr1: any[] = [1];
     const arr2: any[] = [2];
-    const merged = merge(arr1, arr2);
-    expect(merged).toStrictEqual([...arr1, ...arr2]);
+    const stitched = merge(arr1, arr2);
+    expect(stitched).toStrictEqual([...arr1, ...arr2]);
   });
 
   it('should merge two objects', () => {
@@ -141,8 +141,8 @@ describe('merge - core', () => {
   it('should merge two complex objects', () => {
     const obj1: any = { one: 1, list: [1] };
     const obj2: any = { two: 2, list: [2] };
-    const merged = merge(obj1, obj2);
-    expect(merged).toStrictEqual({ one: 1, two: 2, list: [1, 2] });
+    const stitched = merge(obj1, obj2);
+    expect(stitched).toStrictEqual({ one: 1, two: 2, list: [1, 2] });
   });
 
 });
@@ -154,8 +154,8 @@ describe('stitch - core', () => {
     const obj2: any = make(obj1);
     obj2.name = 'Don';
 
-    const merged = stitch(obj1, obj2);
-    expect(merged).toStrictEqual({ name: 'Don', surname: 'Joe' });
+    const stitched = stitch(obj1, obj2);
+    expect(stitched).toStrictEqual({ name: 'Don', surname: 'Joe' });
   });
 
   it('should stitch a sub reference to a parent object', () => {
@@ -163,8 +163,8 @@ describe('stitch - core', () => {
     const obj2: any = make(obj1.profile);
     Object.assign(obj2, { name: 'Don' })
 
-    const merged = stitch(obj1, obj2);
-    expect(merged).toStrictEqual({ profile: { name: 'Don' } });
+    const stitched = stitch(obj1, obj2);
+    expect(stitched).toStrictEqual({ profile: { name: 'Don' } });
   });
 
 });

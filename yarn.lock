@@ -1597,11 +1597,11 @@ __metadata:
     "@typescript-eslint/parser": ^5.30.3
     eslint: ^7.0.0
     eslint-plugin-import: ^2.25.3
-    fflate: ^0.7.3
     flatten-anything: ^3.0.2
     jest: ^28.1.1
     lodash.mergewith: ^4.6.2
     lodash.reduce: ^4.6.0
+    minie: ^0.0.11
     nanoid: 3.1.20
     ts-jest: ^28.0.5
     tslib: ^2.4.0
@@ -3953,6 +3953,15 @@ __metadata:
   version: 2.1.0
   resolution: "mimic-fn@npm:2.1.0"
   checksum: d2421a3444848ce7f84bd49115ddacff29c15745db73f54041edc906c14b131a38d05298dae3081667627a59b2eb1ca4b436ff2e1b80f69679522410418b478a
+  languageName: node
+  linkType: hard
+
+"minie@npm:^0.0.11":
+  version: 0.0.11
+  resolution: "minie@npm:0.0.11"
+  dependencies:
+    fflate: ^0.7.3
+  checksum: d385f859e66e4c6098da84ba514e994182475d6bb77dea690e0bf9dc361e06efe6d8f78c6da8f45ce628cc682e3601a6ae00e0298dfecfddf5d467b51e72dfb0
   languageName: node
   linkType: hard
 

@@ -137,7 +137,7 @@ export const report = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]
 
         if (Context.getReference(rValue) === targetDestinationReference && Array.isArray(rValue)) {
           rParent[rKey] = merge(rValue, [target]);
-          // console.log(rKey, { merged: rParent[rKey] })
+          // console.log(rKey, { stitched: rParent[rKey] })
 
         } else if (Context.getReference(rValue) === targetRef) {
           rParent[rKey] = merge(rValue, target);

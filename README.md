@@ -4,7 +4,8 @@
 
 # Concept 💡
 
-    TLDR: Merging back together deeply nested data that has been updated in parallel is hard. Cagibi does the heavy lifting by holding hidden references to automatically stitch all your data back together.
+    TLDR: Merging back together deeply nested data that has been updated in parallel is hard.
+    Cagibi does the heavy lifting by holding hidden references to automatically stitch all your data back together.
 
 Adding or updating data into a deeply nested data structure can be *manageable* when you do it in the same context. Now imagine fetching bits of data in parallel (so completely async), and wanting to merge these all together once everything is fetched. This is now more work, isn't it? 🤯
 
@@ -28,7 +29,7 @@ const { details } = profile;
 
 details.age = 23;
 
-const merged = stitch(profile, details);
+const stitched = stitch(profile, details);
 // => { name: 'Joe', details: { age: 23 } }
 
 // Example with an array
@@ -38,12 +39,12 @@ const list = make([]);
 // 2. Make another object with a destination object as second paremeter (only for arrays)
 const item = make({ name: 'John' }, list);
 
-const merged = stitch(state, item);
+const stitched = stitch(state, item);
 // => [{ name: 'John'}]
 ```
 
 # More examples
-### Async operations (with in-memory state)
+### Async operations (with the in-memory state)
 ```js
 import { make, stitch, write, read } from 'cagibi';
 
@@ -63,7 +64,7 @@ const result = stitch(list, item1, item2);
 // => [{ name: 'John', age: 23 }, { name: 'Jane', age: 22 }]
 ```
 
-### Async operations (with saved state)
+### Async operations (with the saved state)
 ```js
 import { make, stitch, write, read } from 'cagibi';
 

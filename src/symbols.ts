@@ -1,4 +1,4 @@
-export const createSymbol = (key: string) => Symbol(`Cagibi__${key}`);
+export const createSymbol = (key: string) => Symbol(`🏪${key}`);
 export const toString = (symbol: Symbol) => `${symbol.toString()}`;
 export const toSymbol = (key: string | symbol) => {
   if (typeof key === 'symbol') return key;
@@ -14,18 +14,18 @@ export const toSymbol = (key: string | symbol) => {
 };
 
 // Context Symbols
-export const Reference = createSymbol('Reference');
-export const DestinationReference = createSymbol('DestinationReference');
-export const CreatedAt = createSymbol('CreatedAt');
-export const UpdatedAt = createSymbol('UpdatedAt');
+export const Reference = createSymbol('R');
+export const DestinationReference = createSymbol('DR');
+export const CreatedAt = createSymbol('CAT');
+export const UpdatedAt = createSymbol('UAT');
 
 export const ContextSymbols = [Reference, DestinationReference, CreatedAt, UpdatedAt];
 
 // IO
-export const Data = createSymbol('Data');
-export const Contexts = createSymbol('Contexts');
+export const Data = createSymbol('D');
+export const Contexts = createSymbol('C');
 
 // Helper Symbols
-export const Root = createSymbol('Root');
-export const Source = createSymbol('Source');
-export const IsProxied = createSymbol('IsProxied');
+export const Root = createSymbol('R');
+export const Source = createSymbol('S');
+export const IsProxied = createSymbol('IP');
