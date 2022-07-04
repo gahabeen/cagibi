@@ -1,7 +1,7 @@
 {
   "name": "cagibi",
   "description": "Data stitching for async nested operations",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "directories": {
