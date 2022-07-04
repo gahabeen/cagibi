@@ -18,23 +18,23 @@ export const newReference = (): string => `${uid()}${process.hrtime.bigint().toS
 // });
 
 export const parseKey = (target: ObjectLike, key: string | number | symbol) => {
-  if (typeof key === 'symbol') return key;
-  return Array.isArray(target) && typeof (+key) === 'number' && !isNaN(+key) ? +key : `${key}`;
+    if (typeof key === 'symbol') return key;
+    return Array.isArray(target) && typeof (+key) === 'number' && !isNaN(+key) ? +key : `${key}`;
 }
 
 export const get = (target: ObjectLike, key: any) => {
-  const reducer = (rOutput: any, rKey: any) => {
-    const parsedKey = parseKey(rOutput, rKey);
-    return Reflect.get(rOutput, parsedKey);
-  };
+    const reducer = (rOutput: any, rKey: any) => {
+        const parsedKey = parseKey(rOutput, rKey);
+        return Reflect.get(rOutput, parsedKey);
+    };
 
-  if (typeof key !== 'string') return reducer(target, key);
-  return `${key}`.split('.').reduce(reducer, target);
+    if (typeof key !== 'string') return reducer(target, key);
+    return `${key}`.split('.').reduce(reducer, target);
 };
 
 export const set = (target: ObjectLike, key: any, value: any, receiver: any = target): boolean => {
-  const parsedKey = parseKey(target, key);
-  return Reflect.set(target, parsedKey, value, receiver);
+    const parsedKey = parseKey(target, key);
+    return Reflect.set(target, parsedKey, value, receiver);
 };
 
 // export const subtract = (target: Set<any> | Array<any> | IterableIterator<any>, against: Set<any> | Array<any> | IterableIterator<any>) => {
@@ -43,27 +43,40 @@ export const set = (target: ObjectLike, key: any, value: any, receiver: any = ta
 // }
 
 export const traverse = (target: ObjectLike, walker: (key: string | number | symbol, value: any, parent?: any) => void) => {
-  for (const k of Reflect.ownKeys(target)) {
-    const value = Reflect.get(target, k);
-    if (isObjectLike(value)) {
-      walker(k, value, target);
-      traverse(value, walker);
+    for (const k of Reflect.ownKeys(target)) {
+        const value = Reflect.get(target, k);
+        if (isObjectLike(value)) {
+            walker(k, value, target);
+            traverse(value, walker);
+        }
     }
-  }
 };
 // export const reduceDeep = <T extends object = any, O = any>(target: T, reducer: (parent: any, value: any, key?: any) => any, initialValue: any = target): O => {
 
 // };
 
 export const reduceDeep = <T extends object = any, O = any>(target: T, reducer: (parent: any, value: any, key?: any) => any, initialValue: any = target): O => {
-  return reduce<T, O>(target, (parent: any, value: any, key: any) => {
-    const newParent = reducer(parent, value, key);
-    if (isObjectLike(newParent[key])) {
-      parent[key] = reduceDeep(parent[key], reducer);
-    } else {
-      parent = newParent;
-    }
+    return reduce<T, O>(target, (parent: any, value: any, key: any) => {
+        const newParent = reducer(parent, value, key);
+        if (isObjectLike(newParent[key])) {
+            parent[key] = reduceDeep(parent[key], reducer);
+        } else {
+            parent = newParent;
+        }
 
-    return parent;
-  }, initialValue);
+        return parent;
+    }, initialValue);
+}
+
+export const flatKeys = (obj: ObjectLike) => {
+    return Object.keys(obj).reduce(function (keys, key) {
+        const value = Reflect.get(obj, key);
+        Array.prototype.push.call(keys, key)
+
+        if (isObjectLike(value)) {
+            Array.prototype.push.apply(keys, flatKeys(value).map(flatKey => `${key}.${flatKey}`));
+        }
+
+        return keys
+    }, [])
 }

@@ -13,7 +13,6 @@
     "media"
   ],
   "dependencies": {
-    "flatten-anything": "^3.0.2",
     "lodash.mergewith": "^4.6.2",
     "lodash.reduce": "^4.6.0",
     "minie": "^0.0.11",

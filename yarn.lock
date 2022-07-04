@@ -1597,7 +1597,6 @@ __metadata:
     "@typescript-eslint/parser": ^5.30.3
     eslint: ^7.0.0
     eslint-plugin-import: ^2.25.3
-    flatten-anything: ^3.0.2
     jest: ^28.1.1
     lodash.mergewith: ^4.6.2
     lodash.reduce: ^4.6.0
@@ -2510,16 +2509,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filter-anything@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "filter-anything@npm:2.2.4"
-  dependencies:
-    is-what: ^3.14.1
-    ts-toolbelt: ^9.6.0
-  checksum: fec0dec78eb97bef0c9ff52e0540ea65791096b4439674f86babbd7141da786ed479070470baed6264f79d439516f62f7cb78dab11bb53794ab0447443c8b996
-  languageName: node
-  linkType: hard
-
 "find-up@npm:^2.1.0":
   version: 2.1.0
   resolution: "find-up@npm:2.1.0"
@@ -2553,16 +2542,6 @@ __metadata:
   version: 3.2.6
   resolution: "flatted@npm:3.2.6"
   checksum: 33b87aa88dfa40ca6ee31d7df61712bbbad3d3c05c132c23e59b9b61d34631b337a18ff2b8dc5553acdc871ec72b741e485f78969cf006124a3f57174de29a0e
-  languageName: node
-  linkType: hard
-
-"flatten-anything@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "flatten-anything@npm:3.0.2"
-  dependencies:
-    filter-anything: ^2.2.4
-    is-what: ^4.1.6
-  checksum: 3b48955172828826d7167b17d0bdf3deab023e787f7fb7b53012e3eae21a512843ff871351c1911079e62c1a483212b1a589108a19cd5a2207ccd4482ea60d66
   languageName: node
   linkType: hard
 
@@ -3147,20 +3126,6 @@ __metadata:
   dependencies:
     call-bind: ^1.0.2
   checksum: 95bd9a57cdcb58c63b1c401c60a474b0f45b94719c30f548c891860f051bc2231575c290a6b420c6bc6e7ed99459d424c652bd5bf9a1d5259505dc35b4bf83de
-  languageName: node
-  linkType: hard
-
-"is-what@npm:^3.14.1":
-  version: 3.14.1
-  resolution: "is-what@npm:3.14.1"
-  checksum: a9a6ce92d33799f1ae0916c7afb6f8128a23ce9d28bd69d9ec3ec88910e7a1f68432e6236c3c8a4d544cf0b864675e5d828437efde60ee0cf8102061d395c1df
-  languageName: node
-  linkType: hard
-
-"is-what@npm:^4.1.6":
-  version: 4.1.7
-  resolution: "is-what@npm:4.1.7"
-  checksum: aade39dcc45a209d6cb2f2d5dbcf0e63ed894aadbae37bd5693c64e9876a27632431b43fc9d9332ebf0795eddd2abc11a2d0f3c6fa41c36330616a645660530e
   languageName: node
   linkType: hard
 
@@ -5142,13 +5107,6 @@ __metadata:
   bin:
     ts-jest: cli.js
   checksum: 53e05db5b7e1e4f4137c47594f902f5caf585ebc73dda67c4552c1ed784d4fde532c5693a61d877d9462290c7965233c2124050b0f00fd4c85cde9bb1a51c974
-  languageName: node
-  linkType: hard
-
-"ts-toolbelt@npm:^9.6.0":
-  version: 9.6.0
-  resolution: "ts-toolbelt@npm:9.6.0"
-  checksum: 9f35fd95d895a5d32ea9fd2e532a695b0bae6cbff6832b77292efa188a0ed1ed6e54f63f74a8920390f3d909a7a3adb20a144686372a8e78b420246a9bd3d58a
   languageName: node
   linkType: hard
 

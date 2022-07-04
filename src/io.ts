@@ -1,5 +1,4 @@
 import { compress, decompress, isCompressed } from 'minie';
-import { flatten } from 'flatten-anything';
 import * as Context from './context';
 import { clone } from './core';
 import * as SYMBOLS from './symbols';
@@ -18,12 +17,9 @@ export const write = <T extends ObjectLike>(source: T, options: { output: InputO
         throw new Error('Source must be a valid ObjectLike created via make() method.');
     }
 
-    const sourceFlat: Record<string, any> = {
-        [ROOT_KEY]: source,
-        ...flatten(source),
-    };
+    const keys: string[] = [ROOT_KEY, ...utils.flatKeys(source)];
 
-    const contexts = Object.keys(sourceFlat).reduce<any>((acc, path) => {
+    const contexts = keys.reduce<any>((acc, path) => {
         const value = customGet(source, path);
         if (!isObjectLike(value)) return acc;
 
