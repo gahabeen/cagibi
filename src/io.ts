@@ -13,6 +13,8 @@ const CONTEXTS_KEY = SYMBOLS.toString(SYMBOLS.Contexts);
 const customGet = (target: any, path: string) => path === ROOT_KEY ? target : utils.get(target, path)
 
 export const write = <T extends ObjectLike>(source: T, options: { output: InputOuputType } = { output: 'compressed' }): T | string => {
+    if(isWritten(source)) return source;
+
     if (!isObjectLike(source) || !Context.getReference(source)) {
         throw new Error('Source must be a valid ObjectLike created via make() method.');
     }

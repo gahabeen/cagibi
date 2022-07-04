@@ -22,11 +22,6 @@
         "outDir": "lib",
         "composite": true
     },
-    "exclude": [
-        "node_modules",
-        "lib"
-    ],
-    "include": [
-        "src"
-    ],
+    "exclude": ["node_modules", "lib"],
+    "include": ["src"]
 }

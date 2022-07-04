@@ -8,11 +8,11 @@ export const descriptorDefaults = {
     enumerable: false,
 };
 
-export const inherit = (target: ObjectLike, destination?: ObjectLike): void => {
+export const inherit = (target: ObjectLike, parent?: ObjectLike): void => {
     if (!isObjectLike(target)) return;
 
     const reference = getReference(target) || newReference();
-    const destinationRef = getReference(destination);
+    const parentRef = getReference(parent);
 
     Object.defineProperties(
         target,
@@ -21,9 +21,9 @@ export const inherit = (target: ObjectLike, destination?: ObjectLike): void => {
                 ...descriptorDefaults,
                 value: reference
             },
-            [SYMBOLS.DestinationReference]: {
+            [SYMBOLS.ParentReference]: {
                 ...descriptorDefaults,
-                value: destinationRef
+                value: parentRef
             },
             [SYMBOLS.CreatedAt]: {
                 ...descriptorDefaults,
@@ -69,7 +69,6 @@ export const set = (source: ObjectLike, properties: PropertyDescriptorMap, optio
         const descriptor = Reflect.get(properties, rKey);
         const key = options.asSymbolKey ? SYMBOLS.toSymbol(rKey) : rKey;
         Reflect.set(acc, key, descriptor);
-        // if ('hey' in source) console.log({ key, rKey, descriptor, acc, ref: getReference(acc) })
         return acc;
     }, {});
 
@@ -77,16 +76,14 @@ export const set = (source: ObjectLike, properties: PropertyDescriptorMap, optio
         ...Object.getOwnPropertyDescriptors(source),
         ...newProperties,
     });
-
-    // if ('hey' in source) console.log({ source, pp: Object.getOwnPropertyDescriptors(source)[Symbol('Cagibi__Reference')], properties, newProperties, ref: getReference(source) })
 }
 
-export const copy = (source: ObjectLike, destination: ObjectLike) => {
+export const copy = (source: ObjectLike, parent: ObjectLike) => {
     // Retrieve interesting context only
     const properties: Record<string, PropertyDescriptor> = get(source);
-    set(destination, properties);
+    set(parent, properties);
 
-    return destination;
+    return parent;
 }
 
 export const getUpdateIndex = (target: any): BigInt | void => {
@@ -103,7 +100,7 @@ export const getUpdatedAt = (target: any): string => isObjectLike(target) ? Refl
 
 export const getReference = (target: any): string => isObjectLike(target) ? Reflect.get(target, SYMBOLS.Reference) : undefined;
 
-export const getDestinationReference = (target: any): string => isObjectLike(target) ? Reflect.get(target, SYMBOLS.DestinationReference) : undefined;
+export const getParentReference = (target: any): string => isObjectLike(target) ? Reflect.get(target, SYMBOLS.ParentReference) : undefined;
 
 export const getSource = <T = any>(target: T): T => (isObjectLike(target) ? Reflect.get(target as any, SYMBOLS.Source) : undefined) as T;
 
@@ -120,12 +117,12 @@ export const getReferences = (target: any): Map<string, ObjectLike> => {
     return deps;
 }
 
-export const getDestinationReferences = (target: any): string[] => {
+export const getParentReferences = (target: any): string[] => {
     const deps = new Set<string>();
 
     const walker = (_: any, value: any) => {
-        const DestinationReference = getDestinationReference(value);
-        if (DestinationReference) deps.add(DestinationReference);
+        const ParentReference = getParentReference(value);
+        if (ParentReference) deps.add(ParentReference);
     }
 
     traverse(target, walker);
@@ -133,7 +130,7 @@ export const getDestinationReferences = (target: any): string[] => {
 }
 
 export const sortByOldestUpdate = (a: ObjectLike, z: ObjectLike): number => {
-    const aUpdatedAt = getUpdateIndex(a) || 0n;
-    const zUpdatedAt = getUpdateIndex(z) || 0n;
+    const aUpdatedAt = getUpdateIndex(a) || Infinity;
+    const zUpdatedAt = getUpdateIndex(z) || Infinity;
     return aUpdatedAt > zUpdatedAt ? 1 : -1;
 }

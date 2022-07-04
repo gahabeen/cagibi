@@ -1,102 +1,83 @@
+<br>
+
 ![Cagibi Illustration](media/header.jpg)
 
-    Data stitching for async nested operations
+<br>
 
-# Concept 💡
+`npm i cagibi` or with `yarn add cagibi`
 
-    TLDR: Merging back together deeply nested data that has been updated in parallel is hard.
-    Cagibi does the heavy lifting by holding hidden references to automatically stitch all your data back together.
+[![Version](https://img.shields.io/npm/v/cagibi?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/cagibi)
+[![Downloads](https://img.shields.io/npm/dt/cagibi.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/cagibi)
 
-Adding or updating data into a deeply nested data structure can be *manageable* when you do it in the same context. Now imagine fetching bits of data in parallel (so completely async), and wanting to merge these all together once everything is fetched. This is now more work, isn't it? 🤯
+Cagibi is coming from the french word used to call a small storeroom. Pronounced `/kä'jēbē/`.
 
-The idea behind **cagibi** is to **make any object referenceable** 🔍 without any work required.
+<!-- You can try live demos in the following:
+[Demo 1](https://codesandbox.io/s/) |
+[Demo 2](https://codesandbox.io/s/). -->
 
-Cagibi adds some unique references to any object properties to serve as unique keys when we want to stitch everything back together. This context is held into hidden keys which won't pollute your data nor degrade your freedom to make your data structure the way you like it.
+#### What is `cagibi`?
+- **Two main methods** to use it: `make` and `stitch`.
+- **Two more methods** to use it with persisted state or through remote channels: `write` and `read`.
+- No store.
+- No complex API.
+#### When would `cagibi` come in handy?
+Merging nested data structure through async channels (API, parallel threads or job queues) without willing to maintain a key-value store with primary keys linking records.
 
-# Get started 🏃‍♂️
+
+    Tiny asynchronous state management based on static data stitching
+
+### Create a stitchable copy of your object
 
 ```js
-import { make, stitch } from 'cagibi';
+import { make } from 'cagibi';
 
-// Example with an object
-
-const profile = make({
-    name: 'Joe',
-    details: {},
-});
-
-const { details } = profile;
-
-details.age = 23;
-
-const stitched = stitch(profile, details);
-// => { name: 'Joe', details: { age: 23 } }
-
-// Example with an array
-
-// 1. Make a copy of any object
-const list = make([]);
-// 2. Make another object with a destination object as second paremeter (only for arrays)
-const item = make({ name: 'John' }, list);
-
-const stitched = stitch(state, item);
-// => [{ name: 'John'}]
+const profile = make({ name: 'Joe', posts: [] });
+// => { name: 'Joe', posts: [] }
 ```
 
-# More examples
-### Async operations (with the in-memory state)
+### Use your object as a reference to stitch a sub-object
+
 ```js
-import { make, stitch, write, read } from 'cagibi';
-
-// 1. Run this separately
-const list = make([]);
-
-// 2. Run this somewhere else
-const item1 = make({ name: 'John' }, list);
-item1.age = 23;
-
-// 3. Run this somewhere else
-const item2 = make({ name: 'Jane' }, list);
-item2.age = 22;
-
-// Finally
-const result = stitch(list, item1, item2);
-// => [{ name: 'John', age: 23 }, { name: 'Jane', age: 22 }]
+const post = make({ title: 'A new post' }, profile.posts);
 ```
+### Stitch them all to get the final object
 
-### Async operations (with the saved state)
 ```js
-import { make, stitch, write, read } from 'cagibi';
+import { stitch } from 'cagibi';
 
-const store = new Map();
-
-// 1. Run this separately
-const list = make([]);
-store.set('list', write(list)); // (Save the state in a storage)
-
-// 2. Run this somewhere else
-const list = read(store.get('list')) // (Load the state from the storage)
-const item1 = make({ name: 'John' }, list);
-item1.age = 23;
-store.set('item1', write(item1));
-
-// 3. Run this somewhere else
-const list = read(store.get('list')) // (Load the state from the storage)
-const item2 = make({ name: 'Jane' }, list);
-item2.age = 22;
-store.set('item2', write(item2));
-
-// Finally
-const list = read(store.get('list'));
-const item1 = read(store.get('item1'));
-const item2 = read(store.get('item2'));
-const result = stitch(list, item1, item2);
-// => [{ name: 'John', age: 23 }, { name: 'Jane', age: 22 }]
+const stitched = stitch(profile, post);
 ```
 
-<!-- # API
+```json
+// Returns stitched state:
+{
+    "name": "Joe",
+    "posts": [{ "title": "A new post" }]
+}
+```
+### Need to re-use it asynchronously or later?
 
-## make()
-## stitch()
-## write()
-## read() -->
+```js
+import { write } from 'cagibi';
+
+const stack = [];
+
+const profile = make({ name: 'Joe', posts: [] });
+const post = make({ title: 'A new post' }, profile.posts);
+
+stack.push(write(profile));
+stack.push(write(post));
+
+// And only later on or in another environment
+const profile = read(profileWritten);
+const post = read(postWritten);
+const stitched = stitch(profile, post);
+```
+
+```json
+// Returns stitched state:
+{
+    "name": "Joe",
+    "posts": [{ "title": "A new post" }]
+}
+```

@@ -5,22 +5,28 @@ import * as SYMBOLS from './symbols';
 import { ObjectLike, WithProperties } from './types';
 import { get, isObjectLike, reduceDeep, set } from './utils';
 
-export const make = <T extends ObjectLike>(target: T, destination?: ObjectLike): WithProperties<T> => {
+/**
+ * Makes a stitchable copy of an object.
+ * @param target Object to make sticheable recursively
+ * @param parent Parent object to which target should be stitched to
+ * @returns Cloned sticheable object
+ */
+export const make = <T extends ObjectLike>(target: T, parent?: ObjectLike): WithProperties<T> => {
     const cloned = clone(target);
 
-    if (destination !== undefined && !Context.getReference(destination)) {
-        throw new Error(`Destination object doesn't include any references. Run it through make() first.`);
+    if (parent !== undefined && !Context.getReference(parent)) {
+        throw new Error(`Parent object doesn't include any references. Run it through make() first.`);
     }
 
-    Context.inherit(cloned, destination);
+    Context.inherit(cloned, parent);
 
     const reduced = reduceDeep<T, any>(cloned, (rParent: any, rValue: any, rKey?: any) => {
-        // Inherit destination context for all ObjectLike values
+        // Inherit parent context for all ObjectLike values
         if (isObjectLike(rValue)) {
             Context.inherit(rValue, rParent);
         }
 
-        // Set values to destination when ObjectLike (skips when reducing on text/number/symbol)
+        // Set values to parent when ObjectLike (skips when reducing on text/number/symbol)
         if (isObjectLike(rParent)) {
             rParent[rKey] = rValue;
         }
@@ -53,10 +59,7 @@ export const proxy = <T extends object = any>(value: T): T => {
 export const clone = <T extends any = any>(source: T, options: { withContext: boolean } = { withContext: true }): T => {
     if (!isObjectLike(source)) return source;
 
-    let cloned;
-
-    if (Array.isArray(source)) cloned = [];
-    else cloned = {};
+    const cloned = Array.isArray(source) ? [] : {};
 
     if (options.withContext) {
         const properties = Context.get(source as ObjectLike);
@@ -79,54 +82,47 @@ export const merge = (target: any, source?: any) => {
         mergeWith({ root: clone(target) }, { root: clone(source) }, (targetValue: any, sourceValue: any) => {
             // Custom merge arrays
             if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
-                const destinationArray = clone(targetValue);
+                const parentArray = clone(targetValue);
 
                 if (Array.isArray(sourceValue)) {
                     // Loop items from source
-                    for (const destinationItem of destinationArray) {
-                        const matchedItem = isObjectLike(destinationItem) && sourceValue.find((x: any) => Context.getReference(x) === Context.getReference(destinationItem));
-                        if (matchedItem) Object.assign(destinationItem, merge(destinationItem, matchedItem));
+                    for (const parentItem of parentArray) {
+                        const matchedItem = isObjectLike(parentItem) && sourceValue.find((x: any) => Context.getReference(x) === Context.getReference(parentItem));
+                        if (matchedItem) Object.assign(parentItem, merge(parentItem, matchedItem));
                     }
 
                     // Loop items from target
                     for (const item of sourceValue) {
-                        const itemExists = isObjectLike(item) && destinationArray.findIndex((x: any) => Context.getReference(x) === Context.getReference(item)) > -1;
-                        if (!itemExists) destinationArray.push(item);
+                        const itemExists = isObjectLike(item) && parentArray.findIndex((x: any) => Context.getReference(x) === Context.getReference(item)) > -1;
+                        if (!itemExists) parentArray.push(item);
                     }
                 }
 
-                return destinationArray;
+                return parentArray;
             }
 
             return undefined;
         }), 'root');
 }
 
-export const report = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): { data: T, operations: any[] } => {
-    let references = new Set(Context.getReferences(source).keys());
-    let cloned = clone(source);
+export const report = <T extends ObjectLike>(firstTarget: T, ...targets: T[]): { data: T, operations: any[] } => {
+    let references = new Set(Context.getReferences(firstTarget).keys());
+    let cloned = clone(firstTarget);
 
     let iterationsWithoutChange = 0;
     const operations: any[] = [];
 
     while (targets.length && iterationsWithoutChange < targets.length) {
-        const target = targets.shift() as ObjectLike;
+        const target = targets.shift() as T;
         const targetRef = Context.getReference(target);
-        const targetDestinationReference = Context.getDestinationReference(target);
+        const targetParentReference = Context.getParentReference(target);
 
-        // Merge target into cloned when no reference
-        if (!targetRef && !targetDestinationReference) {
+        if (!targetRef && !targetParentReference) {
             cloned = merge(cloned, target);
-            // operations.push({
-            //   description: '!targetRef && !targetDestinationReference',
-            //   data: {
-            //     cloned,
-            //     target
-            //   }
-            // })
         }
-        // Check all destinations are present in the target
-        else if (references.has(targetRef) || references.has(targetDestinationReference)) {
+
+        // Check all parents are present in the target
+        else if (references.has(targetRef) || references.has(targetParentReference)) {
             // Reference all the children in the target
             const targetReferences = Context.getReferences(target);
             references = new Set([...references, ...targetReferences.keys()]);
@@ -134,7 +130,7 @@ export const report = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]
 
             cloned = Reflect.get(reduceDeep<{ root: T }, any>({ root: cloned }, (rParent, rValue, rKey) => {
 
-                if (Context.getReference(rValue) === targetDestinationReference && Array.isArray(rValue)) {
+                if (Context.getReference(rValue) === targetParentReference && Array.isArray(rValue)) {
                     rParent[rKey] = merge(rValue, [target]);
                     // console.log(rKey, { stitched: rParent[rKey] })
 
@@ -166,9 +162,14 @@ export const parse = <T extends ObjectLike = any>(source: T | string): T => {
     return source as T;
 };
 
-export const stitch = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): T => {
-    const sourceSafe = isWritten(source) ? read(source) : source;
-    const targetsSafe = targets.map(parse).sort(Context.sortByOldestUpdate);
+/**
+ * Stitch all target objects to the source object.
+ * @param source Main object to stitch from.
+ * @param targets All sub-objects to stitch to the main object
+ * @returns Stitched object
+ */
+export const stitch = (...targets: ObjectLike[]): any => {
+    const [target, ...otherTargets] = targets.map(parse).sort(Context.sortByOldestUpdate);
 
-    return report(sourceSafe, ...targetsSafe).data;
-}
+    return report(target, ...otherTargets).data;
+};
