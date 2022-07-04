@@ -30,7 +30,7 @@ describe('read - core', () => {
         expect(getReference(created)).toBe(getReference(obj));
     });
 
-    it('should read a state empty object as json (default)', () => {
+    it('should read a state empty object as json', () => {
         const obj = make({ hey: true });
         const written = write(obj, { output: 'json' });
         const created = read(written);

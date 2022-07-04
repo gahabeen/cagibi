@@ -1,5 +1,6 @@
 import * as Context from '../src/context';
 import { clone, stitch, make, merge, proxy, unmake } from '../src/core';
+import { write } from '../src/io';
 import * as SYMBOLS from '../src/symbols';
 
 describe('clone - core', () => {
@@ -165,6 +166,15 @@ describe('stitch - core', () => {
 
     const stitched = stitch(obj1, obj2);
     expect(stitched).toStrictEqual({ profile: { name: 'Don' } });
+  });
+
+  it('should stitch objects which are written', () => {
+    const obj1: any = make({ surname: 'Joe' });
+    const obj2: any = make(obj1);
+    obj2.name = 'Don';
+
+    const stitched = stitch(write(obj1), write(obj2));
+    expect(stitched).toStrictEqual({ name: 'Don', surname: 'Joe' });
   });
 
 });

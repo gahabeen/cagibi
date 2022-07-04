@@ -47,6 +47,9 @@ export const write = <T extends ObjectLike>(source: T, options: { output: InputO
     return flat as T;
 }
 
+export const isWritten = (value: any) => {
+    return isCompressed(value) || (isObjectLike(value) && Reflect.has(value, CONTEXTS_KEY));
+};
 
 export const read = <T extends ObjectLike = any>(written: T | string): T => {
     let input = written;

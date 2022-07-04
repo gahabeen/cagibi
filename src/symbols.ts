@@ -1,4 +1,4 @@
-export const createSymbol = (key: string) => Symbol(`🏪${key}`);
+export const createSymbol = (key: string) => Symbol(`📦${key}`);
 export const toString = (symbol: Symbol) => `${symbol.toString()}`;
 export const toSymbol = (key: string | symbol) => {
   if (typeof key === 'symbol') return key;
