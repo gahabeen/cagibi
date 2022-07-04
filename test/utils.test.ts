@@ -42,16 +42,16 @@ describe('newReference()', () => {
   });
 });
 
-describe('readId(id: string)', () => {
-  it('should return an timestamp (ts) that should be a valid Date', () => {
-    expect(utils.readId(utils.newReference()).ts).toBeInstanceOf(Date);
-    expect(utils.readId(utils.newReference()).ts.getTime()).toBeLessThanOrEqual(new Date().getTime());
-  });
+// describe('readId(id: string)', () => {
+//   it('should return an timestamp (ts) that should be a valid Date', () => {
+//     expect(utils.readId(utils.newReference()).ts).toBeInstanceOf(Date);
+//     expect(utils.readId(utils.newReference()).ts.getTime()).toBeLessThanOrEqual(new Date().getTime());
+//   });
 
-  it('should return an uid (uid) that should be a string of fixed length', () => {
-    expect(utils.readId(utils.newReference()).uid.length).toBe(utils.UID_LENGTH);
-  });
-});
+//   it('should return an uid (uid) that should be a string of fixed length', () => {
+//     expect(utils.readId(utils.newReference()).uid.length).toBe(utils.UID_LENGTH);
+//   });
+// });
 
 
 describe('parseKey(id: string | number | symbol)', () => {

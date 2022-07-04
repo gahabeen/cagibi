@@ -18,14 +18,15 @@ export const Reference = createSymbol('R');
 export const DestinationReference = createSymbol('DR');
 export const CreatedAt = createSymbol('CAT');
 export const UpdatedAt = createSymbol('UAT');
+export const UpdateIndex = createSymbol('UO');
 
-export const ContextSymbols = [Reference, DestinationReference, CreatedAt, UpdatedAt];
+export const ContextSymbols = [Reference, DestinationReference, CreatedAt, UpdatedAt, UpdateIndex];
 
 // IO
 export const Data = createSymbol('D');
 export const Contexts = createSymbol('C');
 
 // Helper Symbols
-export const Root = createSymbol('R');
+export const Root = createSymbol('RT');
 export const Source = createSymbol('S');
 export const IsProxied = createSymbol('IP');

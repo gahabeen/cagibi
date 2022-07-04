@@ -40,9 +40,7 @@ export const proxy = <T extends object = any>(value: T): T => {
         get(gTarget, gKey) {
             if (gKey === SYMBOLS.IsProxied) return true;
             if (gKey === SYMBOLS.Source) return gTarget;
-            const gValue = get(gTarget, gKey);
-            // if (isObjectLike(gValue)) return proxy(gValue);
-            return gValue;
+            return get(gTarget, gKey);
         },
         set(sTarget, sKey, sValue, sReceiver) {
             const state = make(sValue, sTarget);
@@ -163,12 +161,14 @@ export const report = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]
     };
 };
 
+export const parse = <T extends ObjectLike = any>(source: T | string): T => {
+    if (isWritten(source)) return read(source);
+    return source as T;
+};
+
 export const stitch = <T extends ObjectLike>(source: T, ...targets: ObjectLike[]): T => {
     const sourceSafe = isWritten(source) ? read(source) : source;
-    const targetsSafe = targets.map((target) => {
-        if (isWritten(target)) return read(target);
-        return target;
-    });
+    const targetsSafe = targets.map(parse).sort(Context.sortByOldestUpdate);
 
     return report(sourceSafe, ...targetsSafe).data;
 }

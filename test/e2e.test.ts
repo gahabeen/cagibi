@@ -265,7 +265,7 @@ describe('end-to-end', () => {
     const items = states.map(state => read(state))
     const stitched = stitch(dataset, ...items);
 
-    expect(stitched).toStrictEqual(tvShows);
+    expect(stitched).toEqual(tvShows);
   });
 
 });
