@@ -1,4 +1,4 @@
-import { make, stitch } from '../src/core';
+const { make, stitch } = require('apify');
 
 const profile = make({ name: 'Joe', posts: [] });
 // => { name: 'Joe', posts: [] }
