@@ -14,11 +14,13 @@ import { get, isObjectLike, reduceDeep, set } from './utils';
 export const make = <T extends ObjectLike>(target: T, parent?: ObjectLike): WithProperties<T> => {
     const cloned = clone(target);
 
-    if (parent !== undefined && !Context.getReference(parent)) {
+    const parsedParent = parse(parent);
+
+    if (parsedParent !== undefined && !Context.getReference(parsedParent)) {
         throw new Error(`Parent object doesn't include any references. Run it through make() first.`);
     }
 
-    Context.inherit(cloned, parent);
+    Context.inherit(cloned, parsedParent);
 
     const reduced = reduceDeep<T, any>(cloned, (rParent: any, rValue: any, rKey?: any) => {
         // Inherit parent context for all ObjectLike values

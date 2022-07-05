@@ -12,6 +12,13 @@
     "lib",
     "media"
   ],
+  "keywords": [
+    "state",
+    "management",
+    "async",
+    "typescript",
+    "nodejs"
+  ],
   "dependencies": {
     "lodash.mergewith": "^4.6.2",
     "lodash.reduce": "^4.6.0",

@@ -1,33 +1,33 @@
-import Stack from '../src/stack';
+import Patches from '../src/patches';
 import { make } from '../src/core';
 
-describe('Stack - stack', () => {
+describe('Patches - patches', () => {
 
-    it('should stack a list of objects', () => {
-        const stack = new Stack();
+    it('should patches a list of objects', () => {
+        const patches = new Patches();
         const list = make([]);
 
         const obj1 = make({ obj: 1 }, list);
         const obj2 = make({ obj: 2 }, list);
-        stack.push(list, obj1, obj2);
+        patches.push(list, obj1, obj2);
 
-        const stitched = stack.stitch();
+        const stitched = patches.stitch();
         expect(stitched).toStrictEqual([{ obj: 1 }, { obj: 2 }]);
     });
 
 
-    it('should stack a list of objects', () => {
-        const stack = new Stack();
+    it('should patches a list of objects', () => {
+        const patches = new Patches();
         const list = make([]);
 
         const obj1 = make({ obj: 1 }, list);
         const obj2 = make({ obj: 2 }, list);
-        stack.push(list, obj1, obj2);
+        patches.push(list, obj1, obj2);
 
-        const written = stack.write();
-        const stackImported = stack.read(written);
+        const written = patches.write();
+        const patchesImported = patches.read(written);
 
-        expect(stack).toStrictEqual(stackImported);
+        expect(patches).toStrictEqual(patchesImported);
     });
 
 });

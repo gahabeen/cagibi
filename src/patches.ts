@@ -2,7 +2,7 @@ import { compress, decompress } from 'minie';
 import { stitch } from './core';
 import { write } from './io';
 
-export class Stack extends Array {
+export class Patches extends Array {
     override push(...items: any[]): number {
         const elements = items.map((item) => write(item));
         return super.push(...elements);
@@ -14,11 +14,11 @@ export class Stack extends Array {
         return elements;
     }
 
-    read(stackWritten: string) {
-        const elements = JSON.parse(decompress(stackWritten));
-        const stack = new Stack();
-        stack.push(...elements);
-        return stack;
+    read(patchesWritten: string) {
+        const elements = JSON.parse(decompress(patchesWritten));
+        const patches = new Patches();
+        patches.push(...elements);
+        return patches;
     }
 
     write() {
@@ -30,4 +30,4 @@ export class Stack extends Array {
     }
 }
 
-export default Stack;
+export default Patches;
