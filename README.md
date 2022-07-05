@@ -20,6 +20,7 @@ Cagibi is coming from the french word used to call a small storeroom. Pronounced
 ### What is `cagibi`?
 - **Two main methods** to use it: `make` and `stitch`.
 - **Two more methods** to use it with persisted state or through remote channels: `write` and `read`.
+- And a **Patches** Array-based class to help handling all patches to be stitched in one place.
 - No store.
 - No complex API.
 ### When would `cagibi` come in handy?

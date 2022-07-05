@@ -2,19 +2,19 @@ import mergeWith from 'lodash.mergewith';
 import * as Context from './context';
 import { isWritten, read } from './io';
 import * as SYMBOLS from './symbols';
-import { ObjectLike, WithProperties } from './types';
+import { ObjectLike, PatchedObject, WithProperties } from './types';
 import { get, isObjectLike, reduceDeep, set } from './utils';
 
 /**
  * Makes a stitchable copy of an object.
  * @param target Object to make sticheable recursively
- * @param parent Parent object to which target should be stitched to
+ * @param parentPatch Parent object to which target should be stitched to
  * @returns Cloned sticheable object
  */
-export const make = <T extends ObjectLike>(target: T, parent?: ObjectLike): WithProperties<T> => {
+ export const make = <T extends ObjectLike>(target: T, parentPatch?: PatchedObject): WithProperties<T> => {
     const cloned = clone(target);
 
-    const parsedParent = parse(parent);
+    const parsedParent = parse(parentPatch);
 
     if (parsedParent !== undefined && !Context.getReference(parsedParent)) {
         throw new Error(`Parent object doesn't include any references. Run it through make() first.`);
@@ -23,12 +23,12 @@ export const make = <T extends ObjectLike>(target: T, parent?: ObjectLike): With
     Context.inherit(cloned, parsedParent);
 
     const reduced = reduceDeep<T, any>(cloned, (rParent: any, rValue: any, rKey?: any) => {
-        // Inherit parent context for all ObjectLike values
+        // Inherit parentPatch context for all ObjectLike values
         if (isObjectLike(rValue)) {
             Context.inherit(rValue, rParent);
         }
 
-        // Set values to parent when ObjectLike (skips when reducing on text/number/symbol)
+        // Set values to parentPatch when ObjectLike (skips when reducing on text/number/symbol)
         if (isObjectLike(rParent)) {
             rParent[rKey] = rValue;
         }
@@ -41,7 +41,7 @@ export const make = <T extends ObjectLike>(target: T, parent?: ObjectLike): With
     return proxied;
 };
 
-export const proxy = <T extends object = any>(value: T): T => {
+export const proxy = <T extends ObjectLike = any>(value: T): T => {
     if (!isObjectLike(value)) return value;
 
     return new Proxy(value, {
@@ -75,7 +75,7 @@ export const clone = <T extends any = any>(source: T, options: { withContext: bo
     return cloned as T;
 }
 
-export const unmake = <T extends ObjectLike>(target: T): T => {
+export const unmake = <T extends PatchedObject>(target: T): T => {
     return clone(Context.getSource<T>(target) || target, { withContext: false });
 }
 
@@ -107,37 +107,62 @@ export const merge = (target: any, source?: any) => {
         }), 'root');
 }
 
-export const report = <T extends ObjectLike>(firstTarget: T, ...targets: T[]): { data: T, operations: any[] } => {
-    let references = new Set(Context.getReferences(firstTarget).keys());
-    let cloned = clone(firstTarget);
+export const findMainPatch = <T extends PatchedObject = PatchedObject>(...patches: PatchedObject[]): T => {
+    const allChildrenReferences = patches.reduce<Set<string>>((acc, patch) => {
+        const [, ...childrenReferences] = Array.from(Context.getReferences(patch).keys());
+        for (const childrenReference of childrenReferences) {
+            acc.add(childrenReference);
+        }
+        return acc;
+    }, new Set());
+
+    return patches.find((patch) => !allChildrenReferences.has(Context.getReference(patch))) as T;
+}
+
+export const report = <T extends PatchedObject = PatchedObject>(...patches: PatchedObject[]): { data: T, unstitchedPatches: any[], stitchedPatchesCount: number } => {
+    const unstitchedPatches = patches.map(parse).sort(Context.sortByOldestUpdate);
+    const firstPatch = findMainPatch(...unstitchedPatches) as T;
+
+    if (!firstPatch) {
+        return {
+            data: undefined,
+            unstitchedPatches,
+            stitchedPatchesCount: 0
+        };
+    }
+
+    unstitchedPatches.splice(unstitchedPatches.indexOf(firstPatch), 1);
+
+    let references = new Set(Context.getReferences(firstPatch).keys());
+    let cloned = clone(firstPatch);
 
     let iterationsWithoutChange = 0;
-    const operations: any[] = [];
+    let stitchedPatchesCount = 1;
 
-    while (targets.length && iterationsWithoutChange < targets.length) {
-        const target = targets.shift() as T;
-        const targetRef = Context.getReference(target);
-        const targetParentReference = Context.getParentReference(target);
+    while (unstitchedPatches.length && iterationsWithoutChange < unstitchedPatches.length) {
+        const patch = unstitchedPatches.shift() as T;
+        const patchRef = Context.getReference(patch);
+        const patchParentReference = Context.getParentReference(patch);
 
-        if (!targetRef && !targetParentReference) {
-            cloned = merge(cloned, target);
+        if (!patchRef && !patchParentReference) {
+            cloned = merge(cloned, patch);
         }
 
-        // Check all parents are present in the target
-        else if (references.has(targetRef) || references.has(targetParentReference)) {
-            // Reference all the children in the target
-            const targetReferences = Context.getReferences(target);
-            references = new Set([...references, ...targetReferences.keys()]);
+        // Check all parents are present in the patch
+        else if (references.has(patchRef) || references.has(patchParentReference)) {
+            // Reference all the children in the patch
+            const patchReferences = Context.getReferences(patch);
+            references = new Set([...references, ...patchReferences.keys()]);
             iterationsWithoutChange = 0;
 
             cloned = Reflect.get(reduceDeep<{ root: T }, any>({ root: cloned }, (rParent, rValue, rKey) => {
 
-                if (Context.getReference(rValue) === targetParentReference && Array.isArray(rValue)) {
-                    rParent[rKey] = merge(rValue, [target]);
+                if (Context.getReference(rValue) === patchParentReference && Array.isArray(rValue)) {
+                    rParent[rKey] = merge(rValue, [patch]);
                     // console.log(rKey, { stitched: rParent[rKey] })
 
-                } else if (Context.getReference(rValue) === targetRef) {
-                    rParent[rKey] = merge(rValue, target);
+                } else if (Context.getReference(rValue) === patchRef) {
+                    rParent[rKey] = merge(rValue, patch);
                 }
                 else if (isObjectLike(rParent)) {
                     rParent[rKey] = rValue;
@@ -148,30 +173,37 @@ export const report = <T extends ObjectLike>(firstTarget: T, ...targets: T[]): {
 
         }
         else {
-            targets.push(target);
+            unstitchedPatches.push(patch);
             iterationsWithoutChange++;
         }
     }
 
     return {
         data: cloned,
-        operations,
+        unstitchedPatches,
+        stitchedPatchesCount
     };
 };
 
-export const parse = <T extends ObjectLike = any>(source: T | string): T => {
+export const parse = <T extends PatchedObject = any>(source: T | string): T => {
     if (isWritten(source)) return read(source);
     return source as T;
 };
 
 /**
  * Stitch all target objects to the source object.
- * @param source Main object to stitch from.
- * @param targets All sub-objects to stitch to the main object
+ * @param patches All sub-objects to stitch to the main object
  * @returns Stitched object
  */
-export const stitch = (...targets: ObjectLike[]): any => {
-    const [target, ...otherTargets] = targets.map(parse).sort(Context.sortByOldestUpdate);
+export const stitch = <T extends PatchedObject = any>(...patches: PatchedObject[]): T => {
+    const { data, unstitchedPatches, stitchedPatchesCount } = report<T>(...patches);
+    if (!stitchedPatchesCount) {
+        throw new Error(`Could not determine a way to stitch the patches.`);
+    }
 
-    return report(target, ...otherTargets).data;
+    if (unstitchedPatches.length) {
+        throw new Error(`Could not stitch all patches.`);
+    }
+
+    return data;
 };
