@@ -2,7 +2,6 @@ import Patches from '../src/patches';
 import { make } from '../src/core';
 
 describe('Patches - patches', () => {
-
     it('should patches a list of objects', () => {
         const patches = new Patches();
         const list = make([]);
@@ -14,7 +13,6 @@ describe('Patches - patches', () => {
         const stitched = patches.stitch();
         expect(stitched).toStrictEqual([{ obj: 1 }, { obj: 2 }]);
     });
-
 
     it('should patches a list of objects', () => {
         const patches = new Patches();
@@ -29,5 +27,4 @@ describe('Patches - patches', () => {
 
         expect(patches).toStrictEqual(patchesImported);
     });
-
 });

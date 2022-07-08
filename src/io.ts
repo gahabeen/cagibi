@@ -2,7 +2,7 @@ import { compress, decompress, isCompressed } from 'minie';
 import * as Context from './context';
 import { clone } from './core';
 import * as SYMBOLS from './symbols';
-import { InputOuputType, ObjectLike } from './types';
+import { InputOuputType, ObjectLike, ReallyAny } from './types';
 import * as utils from './utils';
 import { isObjectLike } from './utils';
 
@@ -10,10 +10,10 @@ const ROOT_KEY = SYMBOLS.toString(SYMBOLS.Root);
 const DATA_KEY = SYMBOLS.toString(SYMBOLS.Data);
 const CONTEXTS_KEY = SYMBOLS.toString(SYMBOLS.Contexts);
 
-const customGet = (target: any, path: string) => path === ROOT_KEY ? target : utils.get(target, path)
+const customGet = (target: ReallyAny, path: string) => (path === ROOT_KEY ? target : utils.get(target, path));
 
 export const write = <T extends ObjectLike>(source: T, options: { output: InputOuputType } = { output: 'compressed' }): T | string => {
-    if(isWritten(source)) return source;
+    if (isWritten(source)) return source;
 
     if (!isObjectLike(source) || !Context.getReference(source)) {
         throw new Error('Source must be a valid ObjectLike created via make() method.');
@@ -21,7 +21,7 @@ export const write = <T extends ObjectLike>(source: T, options: { output: InputO
 
     const keys: string[] = [ROOT_KEY, ...utils.flatKeys(source)];
 
-    const contexts = keys.reduce<any>((acc, path) => {
+    const contexts = keys.reduce<ReallyAny>((acc, path) => {
         const value = customGet(source, path);
         if (!isObjectLike(value)) return acc;
 
@@ -35,7 +35,7 @@ export const write = <T extends ObjectLike>(source: T, options: { output: InputO
 
     const flat = {
         [DATA_KEY]: clone(source),
-        [CONTEXTS_KEY]: contexts
+        [CONTEXTS_KEY]: contexts,
     };
 
     if (options.output === 'compressed') {
@@ -43,13 +43,13 @@ export const write = <T extends ObjectLike>(source: T, options: { output: InputO
     }
 
     return flat as T;
-}
+};
 
-export const isWritten = (value: any) => {
+export const isWritten = (value: ReallyAny) => {
     return isCompressed(value) || (isObjectLike(value) && Reflect.has(value, CONTEXTS_KEY));
 };
 
-export const read = <T extends ObjectLike = any>(written: T | string): T => {
+export const read = <T extends ObjectLike = ReallyAny>(written: T | string): T => {
     let input = written;
 
     if (isCompressed(input)) {
@@ -70,10 +70,10 @@ export const read = <T extends ObjectLike = any>(written: T | string): T => {
     const target = clone(data);
 
     for (const path of Object.keys(contexts)) {
-        let value = customGet(target, path);
+        const value = customGet(target, path);
         const context = Reflect.get(contexts, path);
         Context.set(value, context, { asSymbolKey: true });
     }
 
     return target;
-}
+};

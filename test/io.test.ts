@@ -5,7 +5,6 @@ import { read, write } from '../src/io';
 import * as SYMBOLS from '../src/symbols';
 
 describe('write - core', () => {
-
     it('should write a state empty object as compressed (default)', () => {
         const obj = make({});
         const written = write(obj, { output: 'json' });
@@ -17,12 +16,9 @@ describe('write - core', () => {
         expect(isCompressed(write(obj))).toBeTruthy();
         expect(isCompressed(write(obj, { output: 'compressed' }))).toBeTruthy();
     });
-
 });
 
-
 describe('read - core', () => {
-
     it('should read a state empty object as compressed (default)', () => {
         const obj = make({ hey: true });
         const written = write(obj);
@@ -36,5 +32,4 @@ describe('read - core', () => {
         const created = read(written);
         expect(getReference(created)).toBe(getReference(obj));
     });
-
 });

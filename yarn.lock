@@ -1600,7 +1600,7 @@ __metadata:
     jest: ^28.1.1
     lodash.mergewith: ^4.6.2
     lodash.reduce: ^4.6.0
-    minie: ^0.0.11
+    minie: ^0.0.12
     nanoid: 3.1.20
     ts-jest: ^28.0.5
     tslib: ^2.4.0
@@ -3921,12 +3921,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minie@npm:^0.0.11":
-  version: 0.0.11
-  resolution: "minie@npm:0.0.11"
+"minie@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "minie@npm:0.0.12"
   dependencies:
     fflate: ^0.7.3
-  checksum: d385f859e66e4c6098da84ba514e994182475d6bb77dea690e0bf9dc361e06efe6d8f78c6da8f45ce628cc682e3601a6ae00e0298dfecfddf5d467b51e72dfb0
+  checksum: 02ee206b4228a96d7123c3694f47c8c18f05ebc70191662ebc80fa65f4eed30d23c503f532800220c77cd7bcceca9a5ae5c42ef887b13a047e9d697bc0b64a83
   languageName: node
   linkType: hard
 

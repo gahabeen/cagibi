@@ -11,7 +11,7 @@
 [![Version](https://img.shields.io/npm/v/cagibi?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/cagibi)
 [![Downloads](https://img.shields.io/npm/dt/cagibi.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/cagibi)
 
-Cagibi is coming from the french word used to call a small storeroom. Pronounced `/kä'jēbē/`.
+Cagibi's name comes from the french word used to call a small storeroom. Pronounced `/kä'jēbē/`.
 
 <!-- You can try live demos in the following:
 [Demo 1](https://codesandbox.io/s/) |
@@ -20,9 +20,13 @@ Cagibi is coming from the french word used to call a small storeroom. Pronounced
 ### What is `cagibi`?
 - **Two main methods** to use it: `make` and `stitch`.
 - **Two more methods** to use it with persisted state or through remote channels: `write` and `read`.
-- And a **Patches** Array-based class to help handling all patches to be stitched in one place.
+- **Some utilities** like `protect(target, ...keys)` to forbid changes on keys.
+- And a **Patches** array-based class to help handling all patches to be stitched back into one object.
 - No store.
 - No complex API.
+- Fully extendable.
+- Intends to work with all native objects.
+
 ### When would `cagibi` come in handy?
 Merging nested data structure through async channels (API, parallel threads or job queues) without willing to maintain a key-value store with primary keys linking records.
 

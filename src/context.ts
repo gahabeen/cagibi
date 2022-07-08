@@ -1,5 +1,5 @@
 import * as SYMBOLS from './symbols';
-import { ObjectLike } from './types';
+import { ObjectLike, ReallyAny } from './types';
 import { isObjectLike, newReference, traverse } from './utils';
 
 export const descriptorDefaults = {
@@ -19,26 +19,26 @@ export const inherit = (target: ObjectLike, parent?: ObjectLike): void => {
         {
             [SYMBOLS.Reference]: {
                 ...descriptorDefaults,
-                value: reference
+                value: reference,
             },
             [SYMBOLS.ParentReference]: {
                 ...descriptorDefaults,
-                value: parentRef
+                value: parentRef,
             },
             [SYMBOLS.CreatedAt]: {
                 ...descriptorDefaults,
-                value: Reflect.get(target, SYMBOLS.CreatedAt) || new Date().getTime()
+                value: Reflect.get(target, SYMBOLS.CreatedAt) || new Date().getTime(),
             },
             [SYMBOLS.UpdatedAt]: {
                 ...descriptorDefaults,
-                value: new Date().getTime()
+                value: new Date().getTime(),
             },
             [SYMBOLS.UpdateIndex]: {
                 ...descriptorDefaults,
-                value: `${process.hrtime.bigint()}`
-            }
-        }
-    )
+                value: `${process.hrtime.bigint()}`,
+            },
+        },
+    );
 };
 
 export const get = (source: ObjectLike, options: { asStringKey?: boolean, isDefinedOnly?: boolean } = { asStringKey: false, isDefinedOnly: true }) => {
@@ -51,14 +51,14 @@ export const get = (source: ObjectLike, options: { asStringKey?: boolean, isDefi
             if (SYMBOLS.ContextSymbols.includes(rSymbol)) {
                 const key = options.asStringKey ? SYMBOLS.toString(rSymbol) : rSymbol;
                 const value = Reflect.get(source, rSymbol);
-                // console.log({ key, value, isRef: key === SYMBOLS.Reference, ref: getReference(source), val: (source as any)[key] })
+                // console.log({ key, value, isRef: key === SYMBOLS.Reference, ref: getReference(source), val: (source as ReallyAny)[key] })
                 if (options.isDefinedOnly || value !== undefined) {
                     Reflect.set(acc, key, { ...descriptorDefaults, value });
                 }
             }
             return acc;
         }, {});
-}
+};
 
 export const set = (source: ObjectLike, properties: PropertyDescriptorMap, options: { asSymbolKey: boolean } = { asSymbolKey: false }) => {
     if (!isObjectLike(source)) {
@@ -76,7 +76,7 @@ export const set = (source: ObjectLike, properties: PropertyDescriptorMap, optio
         ...Object.getOwnPropertyDescriptors(source),
         ...newProperties,
     });
-}
+};
 
 export const copy = (source: ObjectLike, parent: ObjectLike) => {
     // Retrieve interesting context only
@@ -84,53 +84,53 @@ export const copy = (source: ObjectLike, parent: ObjectLike) => {
     set(parent, properties);
 
     return parent;
-}
+};
 
-export const getUpdateIndex = (target: any): BigInt | void => {
+export const getUpdateIndex = (target: ReallyAny): bigint | void => {
     if (!isObjectLike(target)) return;
     const updateIndexString = Reflect.get(target, SYMBOLS.UpdateIndex);
     if (updateIndexString) {
         return BigInt(updateIndexString);
     }
-}
+};
 
-export const getCreatedAt = (target: any): string => isObjectLike(target) ? Reflect.get(target, SYMBOLS.UpdatedAt) : undefined;
+export const getCreatedAt = (target: ReallyAny): string => (isObjectLike(target) ? Reflect.get(target, SYMBOLS.UpdatedAt) : undefined);
 
-export const getUpdatedAt = (target: any): string => isObjectLike(target) ? Reflect.get(target, SYMBOLS.UpdatedAt) : undefined;
+export const getUpdatedAt = (target: ReallyAny): string => (isObjectLike(target) ? Reflect.get(target, SYMBOLS.UpdatedAt) : undefined);
 
-export const getReference = (target: any): string => isObjectLike(target) ? Reflect.get(target, SYMBOLS.Reference) : undefined;
+export const getReference = (target: ReallyAny): string => (isObjectLike(target) ? Reflect.get(target, SYMBOLS.Reference) : undefined);
 
-export const getParentReference = (target: any): string => isObjectLike(target) ? Reflect.get(target, SYMBOLS.ParentReference) : undefined;
+export const getParentReference = (target: ReallyAny): string => (isObjectLike(target) ? Reflect.get(target, SYMBOLS.ParentReference) : undefined);
 
-export const getSource = <T = any>(target: T): T => (isObjectLike(target) ? Reflect.get(target as any, SYMBOLS.Source) : undefined) as T;
+export const getSource = <T = ReallyAny>(target: T): T => (isObjectLike(target) ? Reflect.get(target as ReallyAny, SYMBOLS.Source) : undefined) as T;
 
-export const getReferences = (target: any): Map<string, ObjectLike> => {
+export const getReferences = (target: ReallyAny): Map<string, ObjectLike> => {
     const deps = new Map();
 
-    const walker = (_: any, value: any) => {
+    const walker = (_: ReallyAny, value: ReallyAny) => {
         const Reference = getReference(value);
         if (Reference) deps.set(Reference, value);
-    }
+    };
 
     traverse({ target }, walker);
 
     return deps;
-}
+};
 
-export const getParentReferences = (target: any): string[] => {
+export const getParentReferences = (target: ReallyAny): string[] => {
     const deps = new Set<string>();
 
-    const walker = (_: any, value: any) => {
+    const walker = (_: ReallyAny, value: ReallyAny) => {
         const ParentReference = getParentReference(value);
         if (ParentReference) deps.add(ParentReference);
-    }
+    };
 
     traverse(target, walker);
     return [...deps.values()];
-}
+};
 
 export const sortByOldestUpdate = (a: ObjectLike, z: ObjectLike): number => {
     const aUpdatedAt = getUpdateIndex(a) || Infinity;
     const zUpdatedAt = getUpdateIndex(z) || Infinity;
     return aUpdatedAt > zUpdatedAt ? 1 : -1;
-}
+};

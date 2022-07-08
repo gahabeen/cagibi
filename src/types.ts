@@ -5,3 +5,6 @@ export type PatchedObject = ObjectLike;
 export type WithProperties<T> = T extends ArrayLike<any> ? T : (T & { [key: string | number | symbol]: any })
 
 export type InputOuputType = 'compressed' | 'json';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ReallyAny = any;

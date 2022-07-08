@@ -1,10 +1,10 @@
 import * as Context from '../src/context';
-import { clone, make, merge, proxy, stitch, unmake } from '../src/core';
+import { clone, make, merge, protect, proxy, stitch, unmake } from '../src/core';
 import { write } from '../src/io';
 import * as SYMBOLS from '../src/symbols';
+import { ReallyAny } from '../src/types';
 
 describe('clone - core', () => {
-
     it('should clone am empty object', () => {
         const obj = {};
         const objCloned = clone(obj);
@@ -12,13 +12,13 @@ describe('clone - core', () => {
     });
 
     it('should clone am empty array', () => {
-        const obj: any[] = [];
+        const obj: ReallyAny[] = [];
         const objCloned = clone(obj);
         expect(objCloned).toStrictEqual(obj);
         expect(Context.getReference(objCloned)).toBe(Context.getReference(obj));
     });
 
-    it('should clone anything else', () => {
+    it('should clone ReallyAnything else', () => {
         expect(clone(false)).toStrictEqual(false);
         expect(clone(1)).toStrictEqual(1);
         expect(clone('name')).toStrictEqual('name');
@@ -31,7 +31,7 @@ describe('clone - core', () => {
     });
 
     it('should clone am empty state array', () => {
-        const obj: any[] = make([]);
+        const obj: ReallyAny[] = make([]);
         const objCloned = clone(obj);
 
         expect(objCloned).toStrictEqual(obj);
@@ -39,16 +39,14 @@ describe('clone - core', () => {
     });
 
     it('should clone am empty state object', () => {
-        const obj: any = make({});
+        const obj: ReallyAny = make({});
         const objCloned = clone(obj);
         expect(objCloned).toStrictEqual(obj);
         expect(Context.getReference(objCloned)).toBe(Context.getReference(obj));
     });
-
 });
 
 describe('proxy - core', () => {
-
     it('should proxy am empty object', () => {
         const obj: { test?: string } = {};
         const pObj = proxy(obj);
@@ -57,16 +55,14 @@ describe('proxy - core', () => {
     });
 
     it('should proxy am empty array', () => {
-        const arr: any[] = [];
+        const arr: ReallyAny[] = [];
         const pArr = proxy(arr);
 
         expect(Reflect.get(pArr, SYMBOLS.IsProxied)).toBeTruthy();
     });
-
 });
 
 describe('unmake - core', () => {
-
     it('should unmake am empty object', () => {
         const obj: { test?: string } = {};
         const wObj = new Proxy(obj, {
@@ -74,7 +70,7 @@ describe('unmake - core', () => {
                 if (gKey === SYMBOLS.Source) return gTarget;
                 if (gKey === 'test') return 'test';
                 return undefined;
-            }
+            },
         });
 
         expect(wObj.test).toBe('test');
@@ -89,11 +85,9 @@ describe('unmake - core', () => {
         expect(Context.getReference(unmake(wObj))).toBeFalsy();
         expect(unmake(wObj)).toStrictEqual(obj);
     });
-
 });
 
 describe('make - core', () => {
-
     it('should make am empty object', () => {
         const obj = {};
         const wObj = make(obj);
@@ -114,45 +108,41 @@ describe('make - core', () => {
     });
 
     it('should make an object from a sub-property', () => {
-        const obj1: any = make({ profile: {} });
-        const obj2: any = make(obj1.profile);
-        Object.assign(obj2, { name: 'Don' })
+        const obj1: ReallyAny = make({ profile: {} });
+        const obj2: ReallyAny = make(obj1.profile);
+        Object.assign(obj2, { name: 'Don' });
 
         expect(Context.getReference(obj1.profile)).toBe(Context.getReference(obj2));
         expect(Context.getReference(obj1)).not.toBe(Context.getReference(obj2));
     });
-
 });
 
 describe('merge - core', () => {
-
     it('should merge two arrays', () => {
-        const arr1: any[] = [1];
-        const arr2: any[] = [2];
+        const arr1: ReallyAny[] = [1];
+        const arr2: ReallyAny[] = [2];
         const stitched = merge(arr1, arr2);
         expect(stitched).toStrictEqual([...arr1, ...arr2]);
     });
 
     it('should merge two objects', () => {
-        const obj1: any = { one: 1 };
-        const obj2: any = { two: 2 };
+        const obj1: ReallyAny = { one: 1 };
+        const obj2: ReallyAny = { two: 2 };
         expect(merge(obj1, obj2)).toStrictEqual({ ...obj1, ...obj2 });
     });
 
     it('should merge two complex objects', () => {
-        const obj1: any = { one: 1, list: [1] };
-        const obj2: any = { two: 2, list: [2] };
+        const obj1: ReallyAny = { one: 1, list: [1] };
+        const obj2: ReallyAny = { two: 2, list: [2] };
         const stitched = merge(obj1, obj2);
         expect(stitched).toStrictEqual({ one: 1, two: 2, list: [1, 2] });
     });
-
 });
 
 describe('stitch - core', () => {
-
     it('should stitch two objects with same reference', () => {
-        const obj1: any = make({ surname: 'Joe' });
-        const obj2: any = make(obj1);
+        const obj1: ReallyAny = make({ surname: 'Joe' });
+        const obj2: ReallyAny = make(obj1);
         obj2.name = 'Don';
 
         const stitched = stitch(obj1, obj2);
@@ -160,17 +150,17 @@ describe('stitch - core', () => {
     });
 
     it('should stitch a sub reference to a parent object', () => {
-        const obj1: any = make({ profile: {} });
-        const obj2: any = make(obj1.profile);
-        Object.assign(obj2, { name: 'Don' })
+        const obj1: ReallyAny = make({ profile: {} });
+        const obj2: ReallyAny = make(obj1.profile);
+        Object.assign(obj2, { name: 'Don' });
 
         const stitched = stitch(obj1, obj2);
         expect(stitched).toStrictEqual({ profile: { name: 'Don' } });
     });
 
     it('should stitch objects which are written', () => {
-        const obj1: any = make({ surname: 'Joe' });
-        const obj2: any = make(obj1);
+        const obj1: ReallyAny = make({ surname: 'Joe' });
+        const obj2: ReallyAny = make(obj1);
         obj2.name = 'Don';
 
         const stitched = stitch(write(obj1), write(obj2));
@@ -178,13 +168,46 @@ describe('stitch - core', () => {
     });
 
     it('should stitch in a list an object with a sub object which has been edited', () => {
-        const list: any[] = make([]);
-        const obj: any = make({ more: { anything: true } }, list);
-        const more: any = make(obj.more);
+        const list: ReallyAny[] = make([]);
+        const obj: ReallyAny = make({ more: { ReallyAnything: true } }, list);
+        const more: ReallyAny = make(obj.more);
         more.name = 'Don';
 
         const stitched = stitch(list, write(obj), write(more));
-        expect(stitched).toStrictEqual([{ more: { anything: true, name: 'Don' } }]);
+        expect(stitched).toStrictEqual([{ more: { ReallyAnything: true, name: 'Don' } }]);
+    });
+});
+
+describe('protect - core', () => {
+    it('should avoid changing a property with a string', () => {
+        const obj: ReallyAny = make({ surname: 'Joe' });
+        const objProtected = protect(obj, 'surname');
+
+        expect(() => { objProtected.surname = 'Other'; }).toThrow(TypeError);
     });
 
+    it('should avoid changing a property with an integer', () => {
+        const obj: ReallyAny = make({ age: 24 });
+        const objProtected = protect(obj, 'age');
+
+        expect(() => { objProtected.age = 22; }).toThrow(TypeError);
+    });
+
+    it('should avoid changing a property with an array', () => {
+        const obj: ReallyAny = make({ list: [] });
+        const objProtected = protect(obj, 'list');
+
+        expect(() => { objProtected.list = []; }).toThrow(TypeError);
+        expect(() => { objProtected.list[0] = 1; }).toThrow(TypeError);
+    });
+
+    it('should avoid changing a property with an object', () => {
+        const obj: ReallyAny = make({ profile: { details: { sizes: { height: 10 } } } });
+        const objProtected = protect(obj, 'profile');
+
+        expect(() => { objProtected.profile = {}; }).toThrow(TypeError);
+        expect(() => { objProtected.profile.details = {}; }).toThrow(TypeError);
+        expect(() => { objProtected.profile.details.sizes = {}; }).toThrow(TypeError);
+        expect(() => { objProtected.profile.details.sizes.height = 2; }).toThrow(TypeError);
+    });
 });
