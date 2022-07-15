@@ -38,6 +38,7 @@ describe('newReference()', () => {
 
     it('should return a different id everytime (100 000 generations)', () => {
         const length = 100000;
+        // eslint-disable-next-line prefer-spread
         expect(new Set(Array.apply(null, Array(length)).map(() => utils.newReference())).size).toBe(length);
     });
 });

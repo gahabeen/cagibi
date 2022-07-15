@@ -115,6 +115,13 @@ describe('make - core', () => {
         expect(Context.getReference(obj1.profile)).toBe(Context.getReference(obj2));
         expect(Context.getReference(obj1)).not.toBe(Context.getReference(obj2));
     });
+
+    it('should use make to parse a written empty object', () => {
+        const obj = write(make({}));
+        const wObj = make(obj);
+
+        expect(wObj).not.toBe(obj);
+    });
 });
 
 describe('merge - core', () => {

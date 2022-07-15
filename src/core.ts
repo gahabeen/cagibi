@@ -12,8 +12,7 @@ import { deepFreeze, get, isObjectLike, reduceDeep, set } from './utils';
  * @returns Cloned sticheable object
  */
 export const make = <T extends ObjectLike>(target: T, parentPatch?: PatchedObject): WithProperties<T> => {
-    const cloned = clone(target);
-
+    const cloned = clone(parse(target));
     const parsedParent = parse(parentPatch);
 
     if (parsedParent !== undefined && !Context.getReference(parsedParent)) {
