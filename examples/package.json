@@ -1,5 +1,12 @@
 {
   "dependencies": {
-    "cagibi": "^0.0.21"
+    "cagibi": "*",
+    "p-queue": "6.6.2"
+  },
+  "resolutions": {
+    "cagibi": "file:../"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.3.0"
   }
 }

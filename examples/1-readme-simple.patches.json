@@ -1,0 +1,44 @@
+[
+  {
+    "reviews": [],
+    "relatedProducts": []
+  },
+  {
+    "reviews": [],
+    "relatedProducts": [],
+    "id": "a7c7f784-834e-446c-8f90-d85ac628360b",
+    "name": "Oriental Granite Chips",
+    "price": "739.00",
+    "description": "Odio corporis saepe neque explicabo odit maxime ut tempora. Consequuntur aut aut sequi natus et ut commodi. Ex quos consectetur et occaecati beatae. Veritatis ut qui quo aspernatur.",
+    "image": "https://loremflickr.com/640/480",
+    "rating": 4
+  },
+  {
+    "id": "bd952fbc-e68b-4b26-a03f-9cfc789460d6",
+    "comment": "Dignissimos qui ipsum magni odio veniam ut ipsa dolorem fugit."
+  },
+  {
+    "id": "e0444430-043e-4a10-822c-1e78117e5601",
+    "comment": "Eveniet consectetur iusto blanditiis quia nihil velit harum temporibus vero."
+  },
+  {
+    "id": "6ebfbd6a-366d-4f99-80e4-6cd1474d6e79",
+    "comment": "Provident et asperiores aut eos ea error esse."
+  },
+  {
+    "id": "2a13a412-dbc3-4319-9393-6405814fd8af",
+    "name": "Oriental Wooden Chair",
+    "price": "173.00",
+    "description": "Nobis ea eaque modi aut incidunt officiis provident. Nobis omnis officiis et. Qui reiciendis quod voluptatem aut.",
+    "image": "https://loremflickr.com/640/480",
+    "rating": 1
+  },
+  {
+    "id": "d04b9bc2-c826-4c0e-8665-cbd1b2abef7f",
+    "name": "Awesome Cotton Cheese",
+    "price": "101.00",
+    "description": "Aut nihil autem nisi est soluta dolores architecto quis eum. Non necessitatibus in et consequuntur assumenda dolor culpa. Dolorem mollitia sed doloribus velit illo consequuntur doloribus odio officia. Magni et totam reprehenderit.",
+    "image": "https://loremflickr.com/640/480",
+    "rating": 2
+  }
+]
