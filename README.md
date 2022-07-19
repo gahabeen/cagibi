@@ -46,8 +46,6 @@ const profile = make({ name: 'Joe', posts: [] });
 const post = make({ title: 'A new post' }, profile.posts);
 ```
 ### Stitch them all to get the final object
-See the [runnable example here](./examples/1-readme-simple.js).
-
 ```js
 import { stitch } from 'cagibi';
 
@@ -62,8 +60,6 @@ Returns stitched state:
 }
 ```
 ### Need to re-use it asynchronously or later?
-See the [runnable example here](./examples/2-readme-async.js).
-
 ```js
 import { make, stitch, write, read } from 'cagibi';
 
@@ -91,8 +87,6 @@ Returns stitched state:
 ```
 
 ### Need help managing all patches?
-See the [runnable example here](./examples/3-readme-patches.js).
-
 ```js
 import { make, stitch, write, read, Patches } from 'cagibi';
 
