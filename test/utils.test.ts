@@ -30,11 +30,11 @@ describe('isObjectLike(value: any)', () => {
 });
 
 describe('newReference()', () => {
-    const id1 = utils.newReference();
+    // const id1 = utils.newReference();
 
-    it('should return a new id of right length', () => {
-        expect(id1.length).toBe(utils.UID_LENGTH + utils.TS_LENGTH);
-    });
+    // it('should return a new id of right length', () => {
+    //     expect(id1.length).toBe(utils.UID_LENGTH + utils.TS_LENGTH);
+    // });
 
     it('should return a different id everytime (100 000 generations)', () => {
         const length = 100000;

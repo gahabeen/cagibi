@@ -7,7 +7,7 @@ import * as SYMBOLS from '../src/symbols';
 describe('write - core', () => {
     it('should write a state empty object as compressed (default)', () => {
         const obj = make({});
-        const written = write(obj, { output: 'json' });
+        const written = write(obj, { output: 'object' });
         expect(Object.keys(written)).toContain(SYMBOLS.toString(SYMBOLS.Contexts));
     });
 
@@ -28,7 +28,7 @@ describe('read - core', () => {
 
     it('should read a state empty object as json', () => {
         const obj = make({ hey: true });
-        const written = write(obj, { output: 'json' });
+        const written = write(obj, { output: 'object' });
         const created = read(written);
         expect(getReference(created)).toBe(getReference(obj));
     });
