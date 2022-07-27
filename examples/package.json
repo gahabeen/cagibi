@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "cagibi": "*",
+    "cagibi": "^0.0.26",
     "p-queue": "6.6.2"
   },
   "resolutions": {

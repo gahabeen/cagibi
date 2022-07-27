@@ -8,11 +8,23 @@ export const descriptorDefaults = {
     enumerable: false,
 };
 
-export const inherit = (target: ObjectLike, parent?: ObjectLike): void => {
+export const inherit = (target: ObjectLike, parent?: ObjectLike, options?: { forceNewReference?: boolean }): void => {
     if (!isObjectLike(target)) return;
+    const { forceNewReference = true } = options || {};
 
-    const reference = getReference(target) || newReference();
-    const parentRef = getReference(parent);
+    let reference = getReference(target) || newReference();
+    let parentReference = getReference(parent);
+    let createdAt = getCreatedAt(target) || new Date().getTime();
+
+    if (!forceNewReference && isObjectLike(parent) && !Array.isArray(parent)) {
+        if (getParentReference(target) !== parentReference) {
+            reference = parentReference;
+            parentReference = getParentReference(parent);
+            createdAt = getCreatedAt(parent);
+        }
+    } else if (reference === parentReference) {
+        throw new Error(`Parent (${parentReference}) can't have the same reference as the target ${reference}`);
+    }
 
     Object.defineProperties(
         target,
@@ -23,11 +35,11 @@ export const inherit = (target: ObjectLike, parent?: ObjectLike): void => {
             },
             [SYMBOLS.ParentReference]: {
                 ...descriptorDefaults,
-                value: parentRef,
+                value: parentReference,
             },
             [SYMBOLS.CreatedAt]: {
                 ...descriptorDefaults,
-                value: Reflect.get(target, SYMBOLS.CreatedAt) || new Date().getTime(),
+                value: createdAt,
             },
             [SYMBOLS.UpdatedAt]: {
                 ...descriptorDefaults,
@@ -78,12 +90,12 @@ export const set = (source: ObjectLike, properties: PropertyDescriptorMap, optio
     });
 };
 
-export const copy = (source: ObjectLike, parent: ObjectLike) => {
+export const copy = (fromSource: ObjectLike, toTarget: ObjectLike) => {
     // Retrieve interesting context only
-    const properties: Record<string, PropertyDescriptor> = get(source);
-    set(parent, properties);
+    const properties: Record<string, PropertyDescriptor> = get(fromSource);
+    set(toTarget, properties);
 
-    return parent;
+    return toTarget;
 };
 
 export const getUpdateIndex = (target: ReallyAny): bigint | void => {

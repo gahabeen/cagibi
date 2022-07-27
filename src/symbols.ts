@@ -14,19 +14,19 @@ export const toSymbol = (key: string | symbol) => {
 };
 
 // Context Symbols
-export const Reference = createSymbol('R');
-export const ParentReference = createSymbol('DR');
-export const CreatedAt = createSymbol('CAT');
-export const UpdatedAt = createSymbol('UAT');
+export const Reference = createSymbol('RF');
+export const ParentReference = createSymbol('PR');
+export const CreatedAt = createSymbol('CA');
+export const UpdatedAt = createSymbol('UA');
 export const UpdateIndex = createSymbol('UO');
 
 export const ContextSymbols = [Reference, ParentReference, CreatedAt, UpdatedAt, UpdateIndex];
 
 // IO
-export const Data = createSymbol('D');
-export const Contexts = createSymbol('C');
+export const Data = createSymbol('DT');
+export const Contexts = createSymbol('CX');
 
 // Helper Symbols
 export const Root = createSymbol('RT');
-export const Source = createSymbol('S');
+export const Source = createSymbol('SR');
 export const IsProxied = createSymbol('IP');

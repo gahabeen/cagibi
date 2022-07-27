@@ -8,26 +8,26 @@ import { deepFreeze, get, isObjectLike, reduceDeep, set } from './utils';
 /**
  * Makes a stitchable copy of an object.
  * @param target Object to make sticheable recursively
- * @param parentPatch Parent object to which target should be stitched to
+ * @param parent Parent object to which target should be stitched to
  * @returns Cloned sticheable object
  */
-export const make = <T extends ObjectLike>(target: T, parentPatch?: PatchedObject): WithProperties<T> => {
+export const make = <T extends ObjectLike>(target: T, parent?: PatchedObject): WithProperties<T> => {
     const cloned = clone(parse(target));
-    const parsedParent = parse(parentPatch);
+    const parsedParent = parse(parent);
 
     if (parsedParent !== undefined && !Context.getReference(parsedParent)) {
-        throw new Error(`Parent object doesn't include any references. Run it through make() first.`);
+        throw new Error(`Parent object doesn't include any references. Run it through make() first. ${parsedParent}`);
     }
 
-    Context.inherit(cloned, parsedParent);
+    Context.inherit(cloned, parsedParent, { forceNewReference: false });
 
     const reduced = reduceDeep<T, ReallyAny>(cloned, (rParent: ReallyAny, rValue: ReallyAny, rKey?: ReallyAny) => {
-        // Inherit parentPatch context for all ObjectLike values
+        // Inherit parent context for all ObjectLike values
         if (isObjectLike(rValue)) {
             Context.inherit(rValue, rParent);
         }
 
-        // Set values to parentPatch when ObjectLike (skips when reducing on text/number/symbol)
+        // Set values to parent when ObjectLike (skips when reducing on text/number/symbol)
         if (isObjectLike(rParent)) {
             rParent[rKey] = rValue;
         }

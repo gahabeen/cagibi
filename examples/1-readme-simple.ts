@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path'
 import PQueue from 'p-queue';
-import { clone, make, stitch, write } from 'cagibi';
+import { clone, make, stitch, write, read } from 'cagibi';
 import * as fake from './context/fake';
 
 const NB_PRODUCTS = 1;
@@ -17,12 +17,17 @@ const queue = new PQueue({ concurrency: 1 });
     // Make our root object
     const results = make([]);
 
+    const save = (patch: any) => {
+        // patches.push(write(patch));
+        patches.push(patch);
+    }
+
     // Simulate an async operation to retrieve a review
     const getReview = async (reviews: []) => {
         const review = make(fake.review(), reviews);
 
         // Save review state (also called patch)
-        patches.push(review);
+        save(review);
     };
 
     // Simulate an async operation to retrieve a product
@@ -31,7 +36,7 @@ const queue = new PQueue({ concurrency: 1 });
         Object.assign(product, fake.product());
 
         // Save product state (also called patch)
-        patches.push(product);
+        save(product);
     };
 
     // Add jobs to get products
@@ -39,7 +44,7 @@ const queue = new PQueue({ concurrency: 1 });
         const emptyProduct: any = make({ reviews: [], relatedProducts: [] }, results);
 
         // Save empty product state (also called patch)
-        patches.push(emptyProduct);
+        save(emptyProduct);
 
         queue.add(() => getProduct(emptyProduct));
 
@@ -64,5 +69,5 @@ const queue = new PQueue({ concurrency: 1 });
 
     fs.writeFileSync(path.resolve(__dirname, '1-readme-simple.json'), JSON.stringify(stitched, null, 2));
     fs.writeFileSync(path.resolve(__dirname, '1-readme-simple.patches.json'), JSON.stringify(patches, null, 2));
-    fs.writeFileSync(path.resolve(__dirname, '1-readme-simple.patches-verbose.json'), JSON.stringify(patches.map((p: any) => write(p, { output: 'object' })), null, 2));
+    fs.writeFileSync(path.resolve(__dirname, '1-readme-simple.patches-verbose.json'), JSON.stringify(patches.map((p: any) => read(write(p, { output: 'object' }))), null, 2));
 })();

@@ -122,6 +122,13 @@ describe('make - core', () => {
 
         expect(wObj).not.toBe(obj);
     });
+
+    it('should use make to inherit reference from parent object', () => {
+        const parent = make({});
+        const obj = make({}, parent);
+
+        expect(Context.getReference(parent)).toBe(Context.getReference(obj));
+    });
 });
 
 describe('merge - core', () => {
