@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.1.0",
   "source": "src/index.ts",
-  "types": "lib/index.ts",
+  "types": "lib/index.d.ts",
   "exports": {
     "require": "./lib/cagibi.cjs",
     "default": "./lib/cagibi.modern.js"
