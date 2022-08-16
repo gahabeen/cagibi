@@ -2,7 +2,7 @@
   "name": "cagibi",
   "description": "Tiny asynchronous state management based on static data stitching",
   "type": "module",
-  "version": "0.0.30",
+  "version": "0.1.0",
   "source": "src/index.ts",
   "types": "lib/index.ts",
   "exports": {
