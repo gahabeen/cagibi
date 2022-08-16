@@ -1,5 +1,6 @@
 import * as Context from '../src/context';
-import { clone, make, merge, protect, proxy, stitch, unmake } from '../src/core';
+import clone from '../src/clone';
+import { make, merge, protect, proxy, stitch, unmake } from '../src/core';
 import { write } from '../src/io';
 import * as SYMBOLS from '../src/symbols';
 import { ReallyAny } from '../src/types';
