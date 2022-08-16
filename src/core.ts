@@ -138,7 +138,7 @@ export const report = <T extends PatchedObject = PatchedObject>(...patches: Patc
         } else if (references.has(patchRef) || references.has(patchParentReference)) {
             // Reference all the children in the patch
             const patchReferences = Context.getReferences(patch);
-            references = new Set([...references, ...patchReferences.keys()]);
+            for (const ref of Array.from(patchReferences.keys())) references.add(ref);
             iterationsWithoutChange = 0;
 
             cloned = Reflect.get(reduceDeep<{ root: T }, ReallyAny>({ root: cloned }, (rParent, rValue, rKey) => {

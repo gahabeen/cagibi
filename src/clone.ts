@@ -2,7 +2,7 @@ import * as Context from './context';
 import { ObjectLike, ReallyAny } from './types';
 import { isObjectLike } from './utils';
 
-const clone = <T extends ReallyAny = ReallyAny>(source: T, options: { withContext: boolean } = { withContext: true }): T => {
+export const clone = <T extends ReallyAny = ReallyAny>(source: T, options: { withContext: boolean } = { withContext: true }): T => {
     if (!isObjectLike(source)) return source;
 
     const cloned = Array.isArray(source) ? [] : {};
