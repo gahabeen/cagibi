@@ -1,4 +1,5 @@
 import mergeWith from 'lodash.mergewith';
+import clone from './clone';
 import * as Context from './context';
 import { isWritten, read } from './io';
 import * as SYMBOLS from './symbols';
@@ -55,23 +56,6 @@ export const proxy = <T extends ObjectLike = ReallyAny>(value: T): T => {
             return true;
         },
     });
-};
-
-export const clone = <T extends ReallyAny = ReallyAny>(source: T, options: { withContext: boolean } = { withContext: true }): T => {
-    if (!isObjectLike(source)) return source;
-
-    const cloned = Array.isArray(source) ? [] : {};
-
-    if (options.withContext) {
-        const properties = Context.get(source as ObjectLike);
-        Context.set(cloned, properties);
-    }
-
-    for (const key of Object.keys(source as ObjectLike)) {
-        Reflect.set(cloned, key, clone(Reflect.get(source as ReallyAny, key), options));
-    }
-
-    return cloned as T;
 };
 
 export const unmake = <T extends PatchedObject>(target: T): T => {

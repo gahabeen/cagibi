@@ -1,5 +1,5 @@
 import { isCompressed } from 'minie';
-import { getReference } from '../lib/context';
+import { getReference } from '../src/context';
 import { make } from '../src/core';
 import { read, write } from '../src/io';
 import * as SYMBOLS from '../src/symbols';

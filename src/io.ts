@@ -1,6 +1,6 @@
 import { compress, decompress, isCompressed } from 'minie';
+import clone from './clone';
 import * as Context from './context';
-import { clone } from './core';
 import * as SYMBOLS from './symbols';
 import { InputOuputType, ObjectLike, ReallyAny } from './types';
 import * as utils from './utils';

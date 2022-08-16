@@ -9,4 +9,5 @@ export * as Context from './context';
 export * as Symbols from './symbols';
 export * as utils from './utils';
 
+export const cagibi = { make, stitch, write, read, Patches };
 export default { make, stitch, write, read, Patches };

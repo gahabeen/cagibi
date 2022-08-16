@@ -1,9 +1,15 @@
 {
   "name": "cagibi",
   "description": "Tiny asynchronous state management based on static data stitching",
-  "version": "0.0.27",
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
+  "version": "0.0.28",
+  "source": "src/index.ts",
+  "exports": {
+    "require": "./lib/cagibi.cjs",
+    "default": "./lib/cagibi.modern.js"
+  },
+  "main": "./lib/cagibi.cjs",
+  "module": "./lib/cagibi.module.js",
+  "unpkg": "./lib/cagibi.umd.js",
   "directories": {
     "lib": "lib",
     "test": "test"
@@ -27,8 +33,8 @@
     "tslib": "^2.4.0"
   },
   "scripts": {
-    "dev": "tsc --build --watch",
-    "build": "tsc --build",
+    "build": "microbundle",
+    "dev": "microbundle watch",
     "test": "jest --watch"
   },
   "devDependencies": {
@@ -43,6 +49,7 @@
     "eslint": "^7.0.0",
     "eslint-plugin-import": "^2.25.3",
     "jest": "^28.1.1",
+    "microbundle": "^0.15.1",
     "ts-jest": "^28.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
