@@ -1,13 +1,14 @@
 {
   "name": "cagibi",
   "description": "Tiny asynchronous state management based on static data stitching",
-  "version": "0.0.29",
+  "type": "module",
+  "version": "0.0.30",
   "source": "src/index.ts",
   "exports": {
-    "require": "./lib/cagibi.js",
+    "require": "./lib/cagibi.cjs",
     "default": "./lib/cagibi.modern.js"
   },
-  "main": "./lib/cagibi.js",
+  "main": "./lib/cagibi.cjs",
   "module": "./lib/cagibi.module.js",
   "unpkg": "./lib/cagibi.umd.js",
   "directories": {
