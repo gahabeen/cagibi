@@ -119,7 +119,7 @@ export const report = <T extends PatchedObject = PatchedObject>(...patches: Patc
 
     unstitchedPatches.splice(unstitchedPatches.indexOf(firstPatch), 1);
 
-    let references = new Set(Context.getReferences(firstPatch).keys());
+    const references = new Set(Context.getReferences(firstPatch).keys());
     let cloned = clone(firstPatch);
 
     let iterationsWithoutChange = 0;
