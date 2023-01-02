@@ -8,22 +8,22 @@ export const descriptorDefaults = {
     enumerable: false,
 };
 
-export const inherit = (target: ObjectLike, parent?: ObjectLike, options?: { forceNewReference?: boolean }): void => {
+export const inherit = (target: ObjectLike, origin?: ObjectLike, options?: { forceNewReference?: boolean }): void => {
     if (!isObjectLike(target)) return;
     const { forceNewReference = true } = options || {};
 
     let reference = getReference(target) || newReference();
-    let parentReference = getReference(parent);
+    let originReference = getReference(origin);
     let createdAt = getCreatedAt(target) || new Date().getTime();
 
-    if (!forceNewReference && isObjectLike(parent) && !Array.isArray(parent)) {
-        if (getParentReference(target) !== parentReference) {
-            reference = parentReference;
-            parentReference = getParentReference(parent);
-            createdAt = getCreatedAt(parent);
+    if (!forceNewReference && isObjectLike(origin) && !Array.isArray(origin)) {
+        if (getOriginReference(target) !== originReference) {
+            reference = originReference;
+            originReference = getOriginReference(origin);
+            createdAt = getCreatedAt(origin);
         }
-    } else if (reference === parentReference) {
-        throw new Error(`Parent (${parentReference}) can't have the same reference as the target ${reference}`);
+    } else if (reference === originReference) {
+        throw new Error(`Origin (${originReference}) can't have the same reference as the target ${reference}`);
     }
 
     Object.defineProperties(
@@ -33,9 +33,9 @@ export const inherit = (target: ObjectLike, parent?: ObjectLike, options?: { for
                 ...descriptorDefaults,
                 value: reference,
             },
-            [SYMBOLS.ParentReference]: {
+            [SYMBOLS.OriginReference]: {
                 ...descriptorDefaults,
-                value: parentReference,
+                value: originReference,
             },
             [SYMBOLS.CreatedAt]: {
                 ...descriptorDefaults,
@@ -112,7 +112,7 @@ export const getUpdatedAt = (target: ReallyAny): string => (isObjectLike(target)
 
 export const getReference = (target: ReallyAny): string => (isObjectLike(target) ? Reflect.get(target, SYMBOLS.Reference) : undefined);
 
-export const getParentReference = (target: ReallyAny): string => (isObjectLike(target) ? Reflect.get(target, SYMBOLS.ParentReference) : undefined);
+export const getOriginReference = (target: ReallyAny): string => (isObjectLike(target) ? Reflect.get(target, SYMBOLS.OriginReference) : undefined);
 
 export const getSource = <T = ReallyAny>(target: T): T => (isObjectLike(target) ? Reflect.get(target as ReallyAny, SYMBOLS.Source) : undefined) as T;
 
@@ -129,12 +129,12 @@ export const getReferences = (target: ReallyAny): Map<string, ObjectLike> => {
     return deps;
 };
 
-export const getParentReferences = (target: ReallyAny): string[] => {
+export const getOriginReferences = (target: ReallyAny): string[] => {
     const deps = new Set<string>();
 
     const walker = (_: ReallyAny, value: ReallyAny) => {
-        const ParentReference = getParentReference(value);
-        if (ParentReference) deps.add(ParentReference);
+        const OriginReference = getOriginReference(value);
+        if (OriginReference) deps.add(OriginReference);
     };
 
     traverse(target, walker);

@@ -4,7 +4,22 @@
 
 <br>
 
-    Tiny asynchronous state management based on static data stitching
+    Addition-only asynchronous state based on static data stitching
+
+```js
+import { make } from 'cagibi';
+
+// Create a stitchable copy of your object
+const profile = make({ name: 'Joe', posts: [] });
+
+// Use your object as a reference to stitch a sub-object
+const post = make({ title: 'A new post' }, profile.posts);
+
+// Stitch them all to get the final object
+const stitched = stitch(profile, post);
+
+// => { name: 'Joe', posts: [{ title: 'A new post' }] }
+```
 
 `npm i cagibi` / `yarn add cagibi`
 

@@ -2,7 +2,7 @@
   "name": "cagibi",
   "description": "Tiny asynchronous state management based on static data stitching",
   "type": "module",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "source": "src/index.ts",
   "types": "lib/index.d.ts",
   "exports": {
@@ -29,10 +29,10 @@
     "nodejs"
   ],
   "dependencies": {
+    "@paralleldrive/cuid2": "^1.0.1",
     "lodash.mergewith": "^4.6.2",
     "lodash.reduce": "^4.6.0",
-    "minie": "^0.0.13",
-    "nanoid": "3.1.20",
+    "minie": "0.0.14",
     "tslib": "^2.4.0"
   },
   "scripts": {

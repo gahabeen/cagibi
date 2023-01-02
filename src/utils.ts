@@ -1,20 +1,15 @@
 import reduce from 'lodash.reduce';
-import { customAlphabet } from 'nanoid';
+import { init } from '@paralleldrive/cuid2';
 import { ObjectLike, ReallyAny } from './types';
 
 export const UID_LENGTH = 12;
 export const TS_LENGTH = 10;
 
-export const uid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', UID_LENGTH);
+export const uid = init({ length: UID_LENGTH });
 
 export const isObjectLike = (target: ReallyAny): boolean => typeof target === 'object' && target !== null;
 
 export const newReference = (): string => `${uid()}${process.hrtime.bigint().toString(36)}`;
-
-// export const readId = (id: string): { uid: string, ts: Date } => ({
-//   uid: id.slice(0, UID_LENGTH),
-//   ts: new Date(parseInt(id.slice(UID_LENGTH), 36)),
-// });
 
 export const parseKey = (target: ObjectLike, key: string | number | symbol) => {
     if (typeof key === 'symbol') return key;

@@ -1,4 +1,4 @@
-import { make, stitch } from './core';
+import { make, stitch, link } from './core';
 import { write, read } from './io';
 import { Patches } from './patches';
 
@@ -10,5 +10,5 @@ export * as Context from './context';
 export * as Symbols from './symbols';
 export * as utils from './utils';
 
-export const cagibi = { make, stitch, write, read, Patches };
-export default { make, stitch, write, read, Patches };
+export const cagibi = { make, stitch, write, read, link, Patches };
+export default { make, stitch, write, read, link, Patches };

@@ -15,12 +15,12 @@ export const toSymbol = (key: string | symbol) => {
 
 // Context Symbols
 export const Reference = createSymbol('RF');
-export const ParentReference = createSymbol('PR');
+export const OriginReference = createSymbol('OR');
 export const CreatedAt = createSymbol('CA');
 export const UpdatedAt = createSymbol('UA');
 export const UpdateIndex = createSymbol('UO');
 
-export const ContextSymbols = [Reference, ParentReference, CreatedAt, UpdatedAt, UpdateIndex];
+export const ContextSymbols = [Reference, OriginReference, CreatedAt, UpdatedAt, UpdateIndex];
 
 // IO
 export const Data = createSymbol('DT');

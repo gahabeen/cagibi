@@ -94,7 +94,7 @@ describe('make - core', () => {
         const wObj = make(obj);
 
         expect(Context.getReference(wObj)).toBeTruthy();
-        expect(Context.getParentReference(wObj)).toBeFalsy();
+        expect(Context.getOriginReference(wObj)).toBeFalsy();
         expect(unmake(wObj)).toStrictEqual(obj);
     });
 

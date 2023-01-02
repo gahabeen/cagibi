@@ -2016,6 +2016,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@noble/hashes@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@noble/hashes@npm:1.1.5"
+  checksum: de3f095a7ac1cbf5b4b3d09f193288d4f2eec35fbadf2ed9fd7e47d8a3042fef410052ba62dc0296a185f994c11192f5357fdb1bd9178c905efd82e946c53b00
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -2060,6 +2067,15 @@ __metadata:
     mkdirp: ^1.0.4
     rimraf: ^3.0.2
   checksum: 1388777b507b0c592d53f41b9d182e1a8de7763bc625fc07999b8edbc22325f074e5b3ec90af79c89d6987fdb2325bc66d59f483258543c14a43661621f841b0
+  languageName: node
+  linkType: hard
+
+"@paralleldrive/cuid2@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@paralleldrive/cuid2@npm:1.0.1"
+  dependencies:
+    "@noble/hashes": ^1.1.5
+  checksum: 9dd63ae088ec030673892068038c6dbd60ba78f1f900b49ade9dda32a03223381d2a57006ae42842ef682185a49b55ee1c16ae9429733e374f308930619f4f57
   languageName: node
   linkType: hard
 
@@ -3161,6 +3177,7 @@ __metadata:
   dependencies:
     "@apify/eslint-config-ts": ^0.2.3
     "@apify/tsconfig": ^0.1.0
+    "@paralleldrive/cuid2": ^1.0.1
     "@types/jest": ^28.1.3
     "@types/lodash.mergewith": ^4.6.7
     "@types/lodash.reduce": ^4.6.7
@@ -3173,8 +3190,7 @@ __metadata:
     lodash.mergewith: ^4.6.2
     lodash.reduce: ^4.6.0
     microbundle: ^0.15.1
-    minie: ^0.0.13
-    nanoid: 3.1.20
+    minie: 0.0.14
     ts-jest: ^28.0.5
     ts-node: ^10.9.1
     tslib: ^2.4.0
@@ -3225,17 +3241,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001370, caniuse-lite@npm:^1.0.30001373":
-  version: 1.0.30001377
-  resolution: "caniuse-lite@npm:1.0.30001377"
-  checksum: bd42fa4255f30df914bcef846412c2710e032dfd43f5861753befbd45244574a8c281147247a57c11b19684c8516e3ef731b45bc12b1adfdad13b62f548b23fb
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001359":
-  version: 1.0.30001361
-  resolution: "caniuse-lite@npm:1.0.30001361"
-  checksum: 3b56c9b4edf8f0b4a1891b0883f6fc7ab758858f4018d4c98aae474d235405cc2271b83c01af856add322a85df6f748514a7db020cade873ad6356e0a80b940c
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001359, caniuse-lite@npm:^1.0.30001370, caniuse-lite@npm:^1.0.30001373":
+  version: 1.0.30001441
+  resolution: "caniuse-lite@npm:1.0.30001441"
+  checksum: 0f5aa8f7ea4d165e88e0d1eaa44564c5bfee66641f265a1fd959e74f0a7e6bc0207db6c28e2fb63dc8b2cd23e0e3cee06c4f372de11c93c57ff5ff4207962c3f
   languageName: node
   linkType: hard
 
@@ -4394,10 +4403,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fflate@npm:^0.7.3":
-  version: 0.7.3
-  resolution: "fflate@npm:0.7.3"
-  checksum: 6d0908c54643d5f979c2ba84a0dab74d71755360731a3a3d43d6aeb81728836f086c4f4d62908e3c03d460f2ef95908daa3bfbb8527be56cac0025b96553ee64
+"fflate@npm:0.7.4":
+  version: 0.7.4
+  resolution: "fflate@npm:0.7.4"
+  checksum: b812ab26047432db70ff4c73eb45ad53bd0774575b4818b9c61c2921e89ec65d1259f06ec1618f2ac55e6a2f2e29b6dc09173d213b46580bc69efae5344bf8f1
   languageName: node
   linkType: hard
 
@@ -6173,12 +6182,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minie@npm:^0.0.13":
-  version: 0.0.13
-  resolution: "minie@npm:0.0.13"
+"minie@npm:0.0.14":
+  version: 0.0.14
+  resolution: "minie@npm:0.0.14"
   dependencies:
-    fflate: ^0.7.3
-  checksum: 8981a937f78e8b543526bc0fae5ea31d6d2a13607b7e8385f893265f0c167af5d5989d203ac3bf08ed0e2b4a9230ac0a44f6f1dd19130595e353fd89b08b543b
+    fflate: 0.7.4
+  checksum: 71d2848aa0a4679834992c93b19bea425dbef29ffeca7dc2028b0c810ea3426830a83149788b24ab3c6ad6ef768e656ac9b8c02ac7d9a21a6b408ce64f76c470
   languageName: node
   linkType: hard
 
@@ -6311,15 +6320,6 @@ __metadata:
   version: 2.1.3
   resolution: "ms@npm:2.1.3"
   checksum: aa92de608021b242401676e35cfa5aa42dd70cbdc082b916da7fb925c542173e36bce97ea3e804923fe92c0ad991434e4a38327e15a1b5b5f945d66df615ae6d
-  languageName: node
-  linkType: hard
-
-"nanoid@npm:3.1.20":
-  version: 3.1.20
-  resolution: "nanoid@npm:3.1.20"
-  bin:
-    nanoid: bin/nanoid.cjs
-  checksum: f6246023d5d8313c2c16be05c18cdb189a6de50ab6418b513b34086eda4aabd12866b2cbe435548c760dc43cf11830b26b14b113afde47305398e3345795e433
   languageName: node
   linkType: hard
 

@@ -14,12 +14,12 @@ describe('getReference - accessors', () => {
     });
 });
 
-describe('getParentReference - accessors', () => {
+describe('getOriginReference - accessors', () => {
     it('should return parent instance id from object', () => {
         const id = utils.newReference();
         const obj: ReallyAny = {};
-        Reflect.set(obj, SYMBOLS.ParentReference, id);
-        expect(Context.getParentReference(obj)).toBe(id);
+        Reflect.set(obj, SYMBOLS.OriginReference, id);
+        expect(Context.getOriginReference(obj)).toBe(id);
     });
 });
 
