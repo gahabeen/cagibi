@@ -78,14 +78,14 @@ export const merge = (target: ReallyAny, source?: ReallyAny,
                 // Loop items from source
                 for (const originItem of originArray) {
                     const matchedItem = isObjectLike(originItem)
-                        && sourceValue.find((x: ReallyAny) => Context.getReference(x) === Context.getReference(originItem));
+                        && sourceValue.find((x: ReallyAny) => Context.getReference(x) && Context.getReference(x) === Context.getReference(originItem));
                     if (matchedItem) Object.assign(originItem, merge(originItem, matchedItem, customizer));
                 }
 
                 // Loop items from target
                 for (const item of sourceValue) {
                     const itemExists = isObjectLike(item)
-                        && originArray.findIndex((x: ReallyAny) => Context.getReference(x) === Context.getReference(item)) > -1;
+                        && originArray.findIndex((x: ReallyAny) => Context.getReference(x) && Context.getReference(x) === Context.getReference(item)) > -1;
                     if (!itemExists) originArray.push(item);
                 }
             }

@@ -152,6 +152,13 @@ describe('merge - core', () => {
         const stitched = merge(obj1, obj2);
         expect(stitched).toStrictEqual({ one: 1, two: 2, list: [1, 2] });
     });
+
+    it.only('should merge two complex objects', () => {
+        const obj1: ReallyAny = { urls: [{ url: 'http://one.com' }] };
+        const obj2: ReallyAny = { urls: [{ url: 'http://two.com' }] };
+        const stitched = merge(obj1, obj2);
+        expect(stitched).toStrictEqual({ urls: [...obj1.urls, ...obj2.urls] });
+    });
 });
 
 describe('stitch - core', () => {
